@@ -4,7 +4,6 @@ import nfcManager, { NfcTech } from "react-native-nfc-manager";
 nfcManager.start();
 
 const useNFCScanner = (scanTimeout = 10000) => {
-    const [isScanning, setIsScanning] = useState(false);
     const [tag, setTag] = useState(null);
     const [error, setError] = useState(null);
 
@@ -15,22 +14,24 @@ const useNFCScanner = (scanTimeout = 10000) => {
         };
     }, []);
 
-    const scanNFC = () => {
-        setIsScanning(true);
-        nfcManager.requestTechnology(NfcTech.NfcA).then( () =>{
-            nfcManager.getTag().then(tag => {
-                setIsScanning(false);
-                setTag(JSON.stringify(tag));
-            }).catch(error => {
-                setIsScanning(false);
-                setError('No se pudo leer el tag NFC.');
-            });
-        }).catch(error => {
-            setIsScanning(false);
-            setError('No se pudo solicitar la tecnología NFC.');
-        });
+    const scanNFC = async () => {
+        try {
+            timeout = setTimeout(() => {
+                nfcManager.cancelTechnologyRequest();
+            }, scanTimeout);
+
+            await nfcManager.requestTechnology(NfcTech.NfcA);
+            const tag = await nfcManager.getTag();
+            setTag(tag);
+            clearTimeout(timeout);
+        } catch (error) {
+            setError('Your card could not be detected. Please try again.');
+        } finally {
+            nfcManager.cancelTechnologyRequest();
+            clearTimeout(timeout);
+        }
     }
-    return { isScanning, tag, error, scanNFC };
+    return { tag, error, scanNFC };
 };
 
 export default useNFCScanner;
