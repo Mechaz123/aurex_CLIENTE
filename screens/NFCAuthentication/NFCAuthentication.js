@@ -3,6 +3,8 @@ import { Alert, Text, View } from 'react-native';
 import styles from './styles';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import useNFCScanner from '../../hooks/useNFCScanner';
+import utils from '../../services/Utils';
+import { AUREX_CLIENTE_AUREX_MID_URL} from 'react-native-dotenv';
 
 const NFCAuthentication = ({ navigation, route }) => {
     const { username } = route.params;
@@ -16,11 +18,18 @@ const NFCAuthentication = ({ navigation, route }) => {
         if (error != null) {
             Alert.alert('Error', error);
             navigation.replace('Login');
-        } else if(tag != null){
-            Alert.alert('Tag', JSON.stringify(tag));
-            navigation.replace('Login');
+        } else if (tag != null) {
+            sendAuthentication();
         }
     }, [error, tag, navigation]);
+
+    const sendAuthentication = async () => {
+        let jsonData = utils.ConvertNfcToJson(tag);
+        jsonData.username = username;
+        const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `/user/authentication`, jsonData);
+        Alert.alert("Data: ", JSON.stringify(userData));
+        navigation.replace('Login');
+    }
 
     const handleCancel = () => {
         navigation.replace('Login');

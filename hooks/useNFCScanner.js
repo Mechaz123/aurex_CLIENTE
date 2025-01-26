@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import nfcManager, { NfcTech } from "react-native-nfc-manager";
 
-nfcManager.start();
-
 const useNFCScanner = (scanTimeout = 10000) => {
     const [tag, setTag] = useState(null);
     const [error, setError] = useState(null);
@@ -20,7 +18,7 @@ const useNFCScanner = (scanTimeout = 10000) => {
                 nfcManager.cancelTechnologyRequest();
             }, scanTimeout);
 
-            await nfcManager.requestTechnology(NfcTech.NfcA);
+            await nfcManager.requestTechnology(NfcTech.Ndef);
             const tag = await nfcManager.getTag();
             setTag(tag);
             clearTimeout(timeout);
