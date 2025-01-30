@@ -27,8 +27,12 @@ const NFCAuthentication = ({ navigation, route }) => {
         let jsonData = utils.ConvertNfcToJson(tag);
         jsonData.username = username;
         const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `/user/authentication`, jsonData);
-        Alert.alert("Data: ", JSON.stringify(userData));
-        navigation.replace('Login');
+        if (userData.Data){
+            navigation.replace('Home')
+        } else {
+            Alert.alert("Error:", "The user or card are invalid.");
+            navigation.replace('Login');
+        }
     }
 
     const handleCancel = () => {
