@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Ndef } from "react-native-nfc-manager";
 
@@ -21,9 +22,10 @@ class Utils {
 
     async sendGetRequest(endpoint, route) {
         const url = `${endpoint}/${route}`;
-        
+        const token = await AsyncStorage.getItem('authToken');
+
         try {
-            const response = await axios.get(url);
+            const response = await axios.get(url, {headers:{Authorization: `Bearer ${token}`}});
             return response.data;
         } catch (error) {
             console.log("GET request failed: ", error);
@@ -33,12 +35,14 @@ class Utils {
 
     async sendPostRequest(endpoint, route, body) {
         const url = `${endpoint}/${route}`;
-
+        const token = await AsyncStorage.getItem('authToken');
+        
         try {
             const response = await axios.post(url, body, {
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
-                },
+                }
             });
             return response.data;
         } catch (error) {
@@ -48,10 +52,12 @@ class Utils {
 
     async sendPutRequest(endpoint, route, body) {
         const url = `${endpoint}/${route}`;
+        const token = await AsyncStorage.getItem('authToken');
 
         try {
             const response = await axios.put(url, body, {
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
             });
@@ -63,9 +69,10 @@ class Utils {
 
     async sendDeleteRequest(endpoint, route) {
         const url = `${endpoint}/${route}`;
+        const token = await AsyncStorage.getItem('authToken');
 
         try {
-            const response = await axios.delete(url);
+            const response = await axios.delete(url,{headers:{Authorization: `Bearer ${token}`}});
             return response.data;
         } catch (error) {
             console.log("DELETE request failed: ", error.message);

@@ -5,6 +5,7 @@ import CustomButton from '../../components/CustomButton/CustomButton';
 import useNFCScanner from '../../hooks/useNFCScanner';
 import utils from '../../services/Utils';
 import { AUREX_CLIENTE_AUREX_MID_URL} from 'react-native-dotenv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NFCAuthentication = ({ navigation, route }) => {
     const { username } = route.params;
@@ -26,12 +27,23 @@ const NFCAuthentication = ({ navigation, route }) => {
     const sendAuthentication = async () => {
         let jsonData = utils.ConvertNfcToJson(tag);
         jsonData.username = username;
-        const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `/user/authentication`, jsonData);
-        if (userData.Data){
-            navigation.replace('Home')
+        const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/authentication`, jsonData);
+
+        if (userData.Data != null){
+            await storeToken(userData.Data.token);
+            navigation.replace('Home');
         } else {
             Alert.alert("Error:", "The user or card are invalid.");
             navigation.replace('Login');
+        }
+    }
+
+    const storeToken = async (token) => {
+        try {
+            AsyncStorage.setItem('authToken', token);
+        } catch (error) {
+            Alert.alert("Error:", "Authentication failed please try again.");
+            navigation.replace('Login'); 
         }
     }
 

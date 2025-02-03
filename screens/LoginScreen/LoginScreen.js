@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react"
-import {Alert, Text, TextInput, View } from "react-native";
+import { Alert, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import nfcManager from "react-native-nfc-manager";
-
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Utils from "../../services/Utils";
+import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [supported, setSupported] = useState(false);
     const [enabled, setEnabled] = useState(false);
+
+    useEffect(() => {
+        verifyStoredToken();
+        nfcManager.start();
+        requirements();
+        return (() => {
+            nfcManager.close();
+        });
+    }, []);
 
     const requirements = async () => {
         const isSupported = await nfcManager.isSupported();
@@ -18,18 +28,26 @@ const LoginScreen = ({ navigation }) => {
         setEnabled(isEnabled);
     }
 
-    useEffect(() => {
-        nfcManager.start();
-        requirements();
-        return (() => {
-            nfcManager.close();
-        });
-    },[]);
+    const verifyStoredToken = async () => {
+        const token = await AsyncStorage.getItem('authToken');
 
-    
+        try {
+            if (token != null) {
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/verify_authentication`);
+                if (response.Data.valid) {
+                    navigation.replace('Home');
+                } else {
+                    await AsyncStorage.removeItem('authToken');
+                }
+            }
+        } catch (error) {
+            await AsyncStorage.removeItem('authToken');
+        }
+    }
+
     const handleLogin = () => {
         if (username) {
-            if (supported && enabled){
+            if (supported && enabled) {
                 navigation.replace('NFCAuthentication', { username });
             } else if (!supported) {
                 Alert.alert("Error", `Your phone don't have NFC technology.`);
@@ -44,8 +62,8 @@ const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>AUREX</Text>
-            <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername}/>
-            <CustomButton title="Log in" onPress={handleLogin}/>
+            <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
+            <CustomButton title="Log in" onPress={handleLogin} />
         </View>
     );
 };
