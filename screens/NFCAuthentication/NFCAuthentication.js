@@ -30,17 +30,18 @@ const NFCAuthentication = ({ navigation, route }) => {
         const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/authentication`, jsonData);
 
         if (userData.Data != null){
-            await storeToken(userData.Data.token);
-            navigation.replace('Home');
+            await storeToken(userData.Data.token, jsonData.id);
+            navigation.replace('Menu');
         } else {
             Alert.alert("Error:", "The user or card are invalid.");
             navigation.replace('Login');
         }
     }
 
-    const storeToken = async (token) => {
+    const storeToken = async (token, id) => {
         try {
             AsyncStorage.setItem('authToken', token);
+            AsyncStorage.setItem('userId', id);
         } catch (error) {
             Alert.alert("Error:", "Authentication failed please try again.");
             navigation.replace('Login'); 

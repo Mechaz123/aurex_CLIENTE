@@ -35,13 +35,15 @@ const LoginScreen = ({ navigation }) => {
             if (token != null) {
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/verify_authentication`);
                 if (response.Data.valid) {
-                    navigation.replace('Home');
+                    navigation.replace('Menu');
                 } else {
                     await AsyncStorage.removeItem('authToken');
+                    await AsyncStorage.removeItem('userId');
                 }
             }
         } catch (error) {
             await AsyncStorage.removeItem('authToken');
+            await AsyncStorage.removeItem('userId');
         }
     }
 
