@@ -21,14 +21,18 @@ export const drawerScreenOptions = {
 export const screenOptions = {
     Home: {
         title:"AUREX",
-        drawerLabel: "Home 🏠",
+        drawerLabel: "🏠 Home",
     },
     Purchase: {
         title: "AUREX",
-        drawerLabel: "Purchase 🛒"
+        drawerLabel: "🛒 Purchase"
     },
     Sell: {
         title: "AUREX",
-        drawerLabel: "Sell 💰"
+        drawerLabel: "💰 Sell"
+    },
+    RegisterCategory: {
+        title: "AUREX",
+        drawerLabel: "✏️ Register Category"
     }
 }

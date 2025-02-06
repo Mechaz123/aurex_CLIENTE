@@ -1,12 +1,13 @@
 import { createDrawerNavigator } from "@react-navigation/drawer"
 import HomeScreen from "../../screens/Home/HomeScreen";
 import { drawerScreenOptions, screenOptions } from "./drawerOptions";
-import PurchaseProducts from "../../screens/PurchaseProducts/PurchaseProducts";
-import SellProducts from "../../screens/SellProducts/SellProducts";
+import PurchaseProducts from "../../screens/Products/PurchaseProducts/PurchaseProducts";
+import SellProducts from "../../screens/Products/SellProducts/SellProducts";
 import { useEffect, useState } from "react";
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import Utils from "../../services/Utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import RegisterCategory from "../../screens/Category/RegisterCategory/RegisterCategory";
 
 const Drawer = createDrawerNavigator();
 
@@ -31,6 +32,9 @@ const DrawerNavigator = () => {
             )}
             {options.includes("Sell") && (
                 <Drawer.Screen name="Sell" component={SellProducts} options={screenOptions.Sell} />
+            )}
+            {options.includes("RegisterCategory") && (
+                <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
             )}
         </Drawer.Navigator>
     )
