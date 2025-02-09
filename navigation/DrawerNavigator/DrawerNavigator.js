@@ -9,6 +9,8 @@ import Utils from "../../services/Utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RegisterCategory from "../../screens/Category/RegisterCategory/RegisterCategory";
 import ViewCategories from "../../screens/Category/ViewCategories/ViewCategories";
+import RegisterRole from "../../screens/Role/RegisterRole/RegisterRole";
+import ViewRoles from "../../screens/Role/ViewRoles/ViewRoles";
 
 const Drawer = createDrawerNavigator();
 
@@ -38,7 +40,13 @@ const DrawerNavigator = () => {
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
             )}
             {options.includes("ViewCategories") && (
-             <Drawer.Screen name="ViewCategories" component={ViewCategories} options={screenOptions.ViewCategories} />   
+                <Drawer.Screen name="ViewCategories" component={ViewCategories} options={screenOptions.ViewCategories} />
+            )}
+            {options.includes("RegisterRole") && (
+                <Drawer.Screen name="RegisterRole" component={RegisterRole} options={screenOptions.RegisterRole} />
+            )}
+            {options.includes("ViewRoles") && (
+                <Drawer.Screen name="ViewRoles" component={ViewRoles} options={screenOptions.ViewRoles} />
             )}
         </Drawer.Navigator>
     )

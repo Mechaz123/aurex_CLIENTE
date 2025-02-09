@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from "react";
+import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
-import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
 
-const ViewCategories = ({ navigation }) => {
-    const [categories, setCategories] = useState([]);
+const ViewRoles = ({ navigation }) => {
+    const [roles, setRoles] = useState([]);
 
     useEffect(() => {
-        loadCategories();
+        loadRoles();
         return (() => {
-            setCategories([]);
+            setRoles([]);
         })
     }, []);
 
-    const loadCategories = async () => {
+    const loadRoles = async () => {
         if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`);
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role`);
 
             if (response.Success) {
-                setCategories(response.Data);
+                setRoles(response.Data);
             } else {
-                Alert.alert("ERROR ❌", "Can't load the categories.")
+                Alert.alert("ERROR ❌", "Can't load the roles.");
             }
         } else {
             navigation.replace("Login");
@@ -30,20 +30,19 @@ const ViewCategories = ({ navigation }) => {
     }
 
     const edit = async (ID) => {
-        navigation.navigate("RegisterCategory", { ID });
+        navigation.navigate("RegisterRole", { ID });
     }
-
     const changeStatus = async (ID) => {
-        if (Authentication.verifyStoredToken) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
+        if (Authentication.verifyStoredToken()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`);
 
             if (response.Success) {
-                let DataCategory = response.Data;
+                let DataRole = response.Data;
 
-                if (DataCategory.active) {
+                if (DataRole.active) {
                     Alert.alert(
                         "INACTIVE",
-                        "Are you sure you want to inactivate the category ?",
+                        "Are you sure you want to inactivate the role ?",
                         [
                             {
                                 text: "Cancel",
@@ -52,13 +51,13 @@ const ViewCategories = ({ navigation }) => {
                             {
                                 text: "Yes",
                                 onPress: async () => {
-                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
+                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The category was inactivated.");
+                                        Alert.alert("Success ✅", "The role was inactivated.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The category was not inactivated.");
+                                        Alert.alert("ERROR ❌", "The role was not inactivated.");
                                     }
                                 }
                             },
@@ -68,7 +67,7 @@ const ViewCategories = ({ navigation }) => {
                 } else {
                     Alert.alert(
                         "ACTIVE",
-                        "Are you sure you want to activate the category ?",
+                        "Are you sure you want to activate the role ?",
                         [
                             {
                                 text: "Cancel",
@@ -77,14 +76,14 @@ const ViewCategories = ({ navigation }) => {
                             {
                                 text: "Yes",
                                 onPress: async () => {
-                                    DataCategory.active = true;
-                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, DataCategory);
+                                    DataRole.active = true;
+                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`, DataRole);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The category was activated.");
+                                        Alert.alert("Success ✅", "The role was activated.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The category was not activated.");
+                                        Alert.alert("ERROR ❌", "The role was not activated.");
                                     }
                                 }
                             },
@@ -101,17 +100,16 @@ const ViewCategories = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.container_title}>
-                <Text style={styles.title}>🔍 View Categories</Text>
+                <Text style={styles.title}>🔍 View Roles</Text>
             </View>
             <ScrollView horizontal>
                 <View style={styles.container_table}>
-                    <FlatList data={categories} keyExtractor={(item) => item.id} style={styles.table_row}
+                    <FlatList data={roles} keyExtractor={(item) => item.id} style={styles.table_row}
                         ListHeaderComponent={() => (
                             <View style={styles.table}>
                                 <Text style={styles.table_header}>Name</Text>
                                 <Text style={styles.table_header}>Description</Text>
                                 <Text style={styles.table_header}>State</Text>
-                                <Text style={styles.table_header}>Parent Category</Text>
                                 <Text style={styles.table_header}> Actions</Text>
                             </View>
                         )} renderItem={({ item }) => (
@@ -119,7 +117,6 @@ const ViewCategories = ({ navigation }) => {
                                 <Text style={styles.table_text}>{item.name}</Text>
                                 <Text style={styles.table_text}>{item.description}</Text>
                                 <Text style={styles.table_text}>{item.active ? "Active" : "Inactive"}</Text>
-                                <Text style={styles.table_text}>{item.parentCategory?.name ? item.parentCategory.name : "None"}</Text>
                                 <View style={styles.table_actions}>
                                     <TouchableOpacity style={styles.table_button} onPress={() => edit(item.id)}>
                                         <Text style={styles.button_text}>✏️</Text>
@@ -134,6 +131,6 @@ const ViewCategories = ({ navigation }) => {
             </ScrollView>
         </View>
     )
-};
+}
 
-export default ViewCategories;
+export default ViewRoles;

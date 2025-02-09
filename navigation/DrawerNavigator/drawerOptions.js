@@ -38,5 +38,13 @@ export const screenOptions = {
     ViewCategories: {
         title: "AUREX",
         drawerLabel: "🔍 View Categories"
+    },
+    RegisterRole: {
+        title: "AUREX",
+        drawerLabel: "✏️ Register Role"
+    },
+    ViewRoles: {
+        title: "AUREX",
+        drawerLabel: "🔍 View Roles"
     }
 }

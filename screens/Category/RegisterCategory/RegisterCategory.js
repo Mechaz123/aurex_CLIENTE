@@ -10,18 +10,19 @@ import { AUREX_CLIENTE_AUREX_MID_URL, AUREX_CLIENTE_AUREX_CRUD_URL } from 'react
 
 const RegisterCategory = ({ navigation, route }) => {
     const { ID } = route.params || {};
-    const [categoryName, setCategoryName] = useState('');
-    const [categoryDescription, setCategoryDescription] = useState('');
+    const [categoryName, setCategoryName] = useState(null);
+    const [categoryDescription, setCategoryDescription] = useState(null);
     const [showPicker, setShowPicker] = useState(false);
     const [parentCategory, setParentCategory] = useState(null);
     const [optionsCategory, setOptionsCategory] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
+
     useEffect(() => {
         loadDataCategory();
         loadOptionsCategory();
         return (() => {
-            setCategoryName('');
-            setCategoryDescription('');
+            setCategoryName(null);
+            setCategoryDescription(null);
             setShowPicker(false);
             setParentCategory(null);
             setOptionsCategory([]);
@@ -30,18 +31,25 @@ const RegisterCategory = ({ navigation, route }) => {
     }, [route.params]);
 
     const loadDataCategory = async () => {
-        if (ID != undefined) {
-            setIsEditing(true);
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
-            
-            if (response.Success) {
-                setCategoryName(response.Data.name);
-                setCategoryDescription(response.Data.description);
-                if(response.Data.parentCategory != null){
-                    setShowPicker(true);
-                    setParentCategory(response.Data.parentCategory.id);
+        if (Authentication.verifyStoredToken()) {
+            if (ID != undefined) {
+                setIsEditing(true);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
+    
+                if (response.Success) {
+                    setCategoryName(response.Data.name);
+                    setCategoryDescription(response.Data.description);
+
+                    if (response.Data.parentCategory != null) {
+                        setShowPicker(true);
+                        setParentCategory(response.Data.parentCategory.id);
+                    }
+                } else {
+                    Alert.alert("ERROR ❌", "Can't load the data.");
                 }
             }
+        } else {
+            navigation.replace("Login");
         }
     }
 
@@ -63,30 +71,35 @@ const RegisterCategory = ({ navigation, route }) => {
                 "name": categoryName,
                 "description": categoryDescription,
             }
-    
-            if (showPicker) {
-                if (parentCategory != null) {
-                    data.parentCategory = parentCategory;
+
+            if (categoryName != null) {
+                if (showPicker) {
+                    if (parentCategory != null) {
+                        data.parentCategory = parentCategory;
+                        const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`, data);
+
+                        if (response.Success) {
+                            Alert.alert("Success ✅", "The category was created.");
+                            navigation.replace("Menu");
+                        } else {
+                            Alert.alert("ERROR ❌", "The category was not created.");
+                        }
+                    } else {
+                        Alert.alert("ERROR ❌", "Please select a parent category.");
+                    }
+                } else {
+                    data.parentCategory = null;
                     const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`, data);
-    
+
                     if (response.Success) {
                         Alert.alert("Success ✅", "The category was created.");
                         navigation.replace("Menu");
                     } else {
                         Alert.alert("ERROR ❌", "The category was not created.");
                     }
-                } else {
-                    Alert.alert("ERROR ❌", "Please select a parent category.");
                 }
             } else {
-                data.parentCategory = null;
-                const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`, data);
-    
-                if (response.Success) {
-                    Alert.alert("Success ✅", "The category was created.");
-                } else {
-                    Alert.alert("ERROR ❌", "The category was not created.");
-                }
+                Alert.alert("ERROR ❌", "Please complete the fields.");
             }
         } else {
             navigation.replace("Login");
@@ -100,30 +113,36 @@ const RegisterCategory = ({ navigation, route }) => {
                 "description": categoryDescription,
             }
 
-            if (showPicker) {
-                if (parentCategory != null) {
-                    data.parentCategory = parentCategory;
+            if (data.name != null && data.name != '') {
+                if (showPicker) {
+                    if (parentCategory != null) {
+                        data.parentCategory = parentCategory;
+                        const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, data);
+
+                        if (response.Success) {
+                            Alert.alert("Success ✅", "The category was edited.");
+                            navigation.replace("Menu");
+                        } else {
+                            Alert.alert("ERROR ❌", "The category was not edited.");
+                        }
+                    } else {
+                        Alert.alert("ERROR ❌", "Please select a parent category.");
+                    }
+                } else {
+                    data.parentCategory = null;
                     const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, data);
-    
+
                     if (response.Success) {
                         Alert.alert("Success ✅", "The category was edited.");
                         navigation.replace("Menu");
                     } else {
                         Alert.alert("ERROR ❌", "The category was not edited.");
                     }
-                } else {
-                    Alert.alert("ERROR ❌", "Please select a parent category.");
                 }
             } else {
-                data.parentCategory = null;
-                const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, data);
-    
-                if (response.Success) {
-                    Alert.alert("Success ✅", "The category was edited.");
-                } else {
-                    Alert.alert("ERROR ❌", "The category was not edited.");
-                }
+                Alert.alert("ERROR ❌", "Please complete the fields.");
             }
+
         } else {
             navigation.replace("Login");
         }
@@ -131,7 +150,7 @@ const RegisterCategory = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{isEditing ? "✏️ Edit Category":"✏️ Register Category"}</Text>
+            <Text style={styles.title}>{isEditing ? "✏️ Edit Category" : "✏️ Register Category"}</Text>
             <TextInput style={styles.textInput} placeholder="Name" placeholderTextColor={colors.menu_inactive_option} value={categoryName} onChangeText={setCategoryName} required />
             <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Description" placeholderTextColor={colors.menu_inactive_option} value={categoryDescription} onChangeText={setCategoryDescription} />
             <View style={styles.switchContainer}>
@@ -142,14 +161,14 @@ const RegisterCategory = ({ navigation, route }) => {
                 <View style={styles.selectContainer}>
                     <Text style={styles.textSelectContainer}>Select the principal category </Text>
                     <Picker style={styles.picker} selectedValue={parentCategory} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setParentCategory(itemValue)} >
-                        <Picker.Item label= "None" value={null} />
+                        <Picker.Item label="None" value={null} />
                         {optionsCategory.map((option, index) => (
                             <Picker.Item key={index} label={option.name} value={option.id} />
                         ))}
                     </Picker>
                 </View>
             )}
-            <CustomButton title={isEditing ? "Edit":"Create"} onPress={isEditing ? editCategory : createCategory} />
+            <CustomButton title={isEditing ? "Edit" : "Create"} onPress={isEditing ? editCategory : createCategory} />
         </View>
     );
 };
