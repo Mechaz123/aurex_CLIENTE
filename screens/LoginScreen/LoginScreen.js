@@ -6,6 +6,7 @@ import nfcManager from "react-native-nfc-manager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Utils from "../../services/Utils";
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
+import colors from "../../styles/colors";
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -64,7 +65,7 @@ const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>AUREX</Text>
-            <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} />
+            <TextInput style={styles.input} placeholder="Username" placeholderTextColor={colors.menu_inactive_option} value={username} onChangeText={setUsername} />
             <CustomButton title="Log in" onPress={handleLogin} />
         </View>
     );

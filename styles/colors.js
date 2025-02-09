@@ -1,5 +1,6 @@
 export default {
     primary: '#D20103',
+    primary_degraded: '#F09D9E',
     background: '#E8E8E8',
     border: '#CED4DA',
     white: '#FFFFFF',

@@ -8,6 +8,7 @@ import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import Utils from "../../services/Utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RegisterCategory from "../../screens/Category/RegisterCategory/RegisterCategory";
+import ViewCategories from "../../screens/Category/ViewCategories/ViewCategories";
 
 const Drawer = createDrawerNavigator();
 
@@ -35,6 +36,9 @@ const DrawerNavigator = () => {
             )}
             {options.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
+            )}
+            {options.includes("ViewCategories") && (
+             <Drawer.Screen name="ViewCategories" component={ViewCategories} options={screenOptions.ViewCategories} />   
             )}
         </Drawer.Navigator>
     )

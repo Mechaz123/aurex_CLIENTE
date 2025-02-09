@@ -34,5 +34,9 @@ export const screenOptions = {
     RegisterCategory: {
         title: "AUREX",
         drawerLabel: "✏️ Register Category"
+    },
+    ViewCategories: {
+        title: "AUREX",
+        drawerLabel: "🔍 View Categories"
     }
 }
