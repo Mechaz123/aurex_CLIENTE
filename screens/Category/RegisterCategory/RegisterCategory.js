@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Alert, Switch, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 import colors from "../../../styles/colors";
@@ -7,9 +7,10 @@ import CustomButton from "../../../components/CustomButton/CustomButton";
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_MID_URL, AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
+import { useFocusEffect } from "@react-navigation/native";
 
 const RegisterCategory = ({ navigation, route }) => {
-    const { ID } = route.params || {};
+    let { ID } = route.params ?? {};
     const [categoryName, setCategoryName] = useState(null);
     const [categoryDescription, setCategoryDescription] = useState(null);
     const [showPicker, setShowPicker] = useState(false);
@@ -17,18 +18,21 @@ const RegisterCategory = ({ navigation, route }) => {
     const [optionsCategory, setOptionsCategory] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
 
-    useEffect(() => {
-        loadDataCategory();
-        loadOptionsCategory();
-        return (() => {
-            setCategoryName(null);
-            setCategoryDescription(null);
-            setShowPicker(false);
-            setParentCategory(null);
-            setOptionsCategory([]);
-            setIsEditing(false);
-        })
-    }, [route.params]);
+    useFocusEffect(
+        useCallback(() => {
+            loadDataCategory();
+            loadOptionsCategory();
+            return (() => {
+                setCategoryName(null);
+                setCategoryDescription(null);
+                setShowPicker(false);
+                setParentCategory(null);
+                setOptionsCategory([]);
+                setIsEditing(false);
+                ID = undefined;
+            })
+        }, [route.params])
+    );
 
     const loadDataCategory = async () => {
         if (Authentication.verifyStoredToken()) {
@@ -47,6 +51,8 @@ const RegisterCategory = ({ navigation, route }) => {
                 } else {
                     Alert.alert("ERROR ❌", "Can't load the data.");
                 }
+            } else {
+                setIsEditing(false);
             }
         } else {
             navigation.replace("Login");
@@ -57,8 +63,12 @@ const RegisterCategory = ({ navigation, route }) => {
         if (Authentication.verifyStoredToken()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `category/parent_categories`);
 
-            if (Object.keys(response.Data).length != 0) {
-                setOptionsCategory(response.Data);
+            if (response.Success) {
+                if (Object.keys(response.Data).length != 0) {
+                    setOptionsCategory(response.Data);
+                }
+            } else {
+                Alert("ERROR", "Can't load the options.");
             }
         } else {
             navigation.replace("Login");
@@ -66,7 +76,7 @@ const RegisterCategory = ({ navigation, route }) => {
     }
 
     const createCategory = async () => {
-        if (Authentication.verifyStoredToken) {
+        if (Authentication.verifyStoredToken()) {
             let data = {
                 "name": categoryName,
                 "description": categoryDescription,
@@ -159,7 +169,7 @@ const RegisterCategory = ({ navigation, route }) => {
             </View>
             {showPicker && (
                 <View style={styles.selectContainer}>
-                    <Text style={styles.textSelectContainer}>Select the principal category </Text>
+                    <Text style={styles.textSelectContainer}>Select the principal category</Text>
                     <Picker style={styles.picker} selectedValue={parentCategory} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setParentCategory(itemValue)} >
                         <Picker.Item label="None" value={null} />
                         {optionsCategory.map((option, index) => (

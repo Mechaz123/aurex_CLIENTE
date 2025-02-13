@@ -11,6 +11,7 @@ import RegisterCategory from "../../screens/Category/RegisterCategory/RegisterCa
 import ViewCategories from "../../screens/Category/ViewCategories/ViewCategories";
 import RegisterRole from "../../screens/Role/RegisterRole/RegisterRole";
 import ViewRoles from "../../screens/Role/ViewRoles/ViewRoles";
+import RolePermission from "../../screens/RolePermission/RolePermission";
 
 const Drawer = createDrawerNavigator();
 
@@ -47,6 +48,9 @@ const DrawerNavigator = () => {
             )}
             {options.includes("ViewRoles") && (
                 <Drawer.Screen name="ViewRoles" component={ViewRoles} options={screenOptions.ViewRoles} />
+            )}
+            {options.includes("RolePermission") && (
+                <Drawer.Screen name="RolePermission" component={RolePermission} options={screenOptions.RolePermission} />
             )}
         </Drawer.Navigator>
     )

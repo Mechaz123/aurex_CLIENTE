@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Alert, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 import colors from "../../../styles/colors";
@@ -6,21 +6,25 @@ import CustomButton from "../../../components/CustomButton/CustomButton";
 import Authentication from "../../../services/Authentication";
 import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import Utils from "../../../services/Utils";
+import { useFocusEffect } from "@react-navigation/native";
 
 const RegisterRole = ({ navigation, route }) => {
-    const { ID } = route.params || {};
+    let { ID } = route.params ?? {};
     const [roleName, setRoleName] = useState(null);
     const [roleDescription, setRoleDescription] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
-    useEffect(() => {
-        loadDataRole();
-        return (() => {
-            setRoleName(null);
-            setRoleDescription(null);
-            setIsEditing(false);
-        })
-    }, [route.params]);
+    useFocusEffect(
+        useCallback(() => {
+            loadDataRole();
+            return (() => {
+                setRoleName(null);
+                setRoleDescription(null);
+                setIsEditing(false);
+                ID = undefined;
+            })
+        }, [route.params])
+    );
 
     const loadDataRole = async () => {
         if (Authentication.verifyStoredToken()) {
@@ -34,6 +38,8 @@ const RegisterRole = ({ navigation, route }) => {
                 } else {
                     Alert.alert("ERROR ❌", "Can't load the data.");
                 }
+            } else {
+                setIsEditing(false);
             }
         } else {
             navigation.replace("Login");

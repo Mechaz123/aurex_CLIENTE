@@ -46,5 +46,9 @@ export const screenOptions = {
     ViewRoles: {
         title: "AUREX",
         drawerLabel: "🔍 View Roles"
+    },
+    RolePermission: {
+        title: "AUREX",
+        drawerLabel: "👮🏻 Manage Role Permissions"
     }
 }
