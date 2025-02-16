@@ -50,5 +50,12 @@ export const screenOptions = {
     RolePermission: {
         title: "AUREX",
         drawerLabel: "👮🏻 Manage Role Permissions"
-    }
+    },
+    RegisterProducts: {
+        title: "AUREX",
+        drawerLabel: "✏️ Register Products" 
+    },
+    Logout: {
+        drawerLabel: "🚪 Logout",
+    },
 }

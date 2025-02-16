@@ -12,6 +12,7 @@ import ViewCategories from "../../screens/Category/ViewCategories/ViewCategories
 import RegisterRole from "../../screens/Role/RegisterRole/RegisterRole";
 import ViewRoles from "../../screens/Role/ViewRoles/ViewRoles";
 import RolePermission from "../../screens/RolePermission/RolePermission";
+import RegisterProducts from "../../screens/Products/RegisterProducts/RegisterProducts";
 
 const Drawer = createDrawerNavigator();
 
@@ -26,6 +27,12 @@ const DrawerNavigator = () => {
         const ID = await AsyncStorage.getItem('userId');
         const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/${ID}/menu_options`);
         setOptions(response.Data);
+    }
+
+    const handleLogout = async (navigation) => {
+        await AsyncStorage.removeItem('authToken');
+        await AsyncStorage.removeItem('userId');
+        navigation.replace("Login");
     }
 
     return (
@@ -52,6 +59,12 @@ const DrawerNavigator = () => {
             {options.includes("RolePermission") && (
                 <Drawer.Screen name="RolePermission" component={RolePermission} options={screenOptions.RolePermission} />
             )}
+            {options.includes("RegisterProducts") && (
+                <Drawer.Screen name="RegisterProducts" component={RegisterProducts} options={screenOptions.RegisterProducts} />
+            )}
+            <Drawer.Screen name="Logout" component={() => null} options={screenOptions.Logout} listeners={({navigation}) => ({
+                focus: () => handleLogout(navigation),      
+            })}/>
         </Drawer.Navigator>
     )
 }
