@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import useNFCScanner from '../../hooks/useNFCScanner';
 import utils from '../../services/Utils';
-import { AUREX_CLIENTE_AUREX_MID_URL} from 'react-native-dotenv';
+import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NFCAuthentication = ({ navigation, route }) => {
@@ -29,7 +29,7 @@ const NFCAuthentication = ({ navigation, route }) => {
         jsonData.username = username;
         const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/authentication`, jsonData);
 
-        if (userData.Data != null){
+        if (userData.Data != null) {
             await storeToken(userData.Data.token, jsonData.id);
             navigation.replace('Menu');
         } else {
@@ -44,7 +44,7 @@ const NFCAuthentication = ({ navigation, route }) => {
             AsyncStorage.setItem('userId', id);
         } catch (error) {
             Alert.alert("Error:", "Authentication failed please try again.");
-            navigation.replace('Login'); 
+            navigation.replace('Login');
         }
     }
 
@@ -54,9 +54,11 @@ const NFCAuthentication = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>¡Hi, {username}!</Text>
+            <Text style={styles.title}>AUREX</Text>
             <Text style={styles.text}>Please swipe your card to log in.</Text>
-            <CustomButton title="Cancel" onPress={handleCancel} />
+            <TouchableOpacity style={styles.button} onPress={handleCancel}>
+                <Text style={styles.text_button}>Cancel</Text>
+            </TouchableOpacity>
         </View>
     );
 }

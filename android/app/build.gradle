@@ -117,4 +117,5 @@ dependencies {
         implementation jscFlavor
     }
     implementation 'androidx.security:security-crypto:1.0.0'
+    implementation project(':react-native-fs')
 }

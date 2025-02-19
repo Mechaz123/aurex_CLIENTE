@@ -31,7 +31,6 @@ const LoginScreen = ({ navigation }) => {
 
     const verifyStoredToken = async () => {
         const token = await AsyncStorage.getItem('authToken');
-
         try {
             if (token != null) {
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/verify_authentication`);
