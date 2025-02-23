@@ -9,55 +9,55 @@ const ViewRoles = ({ navigation }) => {
     const [roles, setRoles] = useState([]);
 
     useEffect(() => {
-        loadRoles();
+        cargarRoles();
         return (() => {
             setRoles([]);
         })
     }, []);
 
-    const loadRoles = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role`);
+    const cargarRoles = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`);
 
             if (response.Success) {
                 setRoles(response.Data);
             } else {
-                Alert.alert("ERROR ❌", "Can't load the roles.");
+                Alert.alert("ERROR ❌", "No se puede cargar los roles.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const edit = async (ID) => {
+    const editar = async (ID) => {
         navigation.navigate("RegisterRole", { ID });
     }
-    const changeStatus = async (ID) => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`);
+    const cambiarEstado = async (ID) => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
 
             if (response.Success) {
-                let DataRole = response.Data;
+                let DataRol = response.Data;
 
-                if (DataRole.active) {
+                if (DataRol.activo) {
                     Alert.alert(
-                        "INACTIVE",
-                        "Are you sure you want to inactivate the role ?",
+                        "INACTIVAR 🚫",
+                        "¿Está seguro de inactivar el rol?",
                         [
                             {
-                                text: "Cancel",
+                                text: "Cancelar",
                                 style: "cancel",
                             },
                             {
-                                text: "Yes",
+                                text: "Si",
                                 onPress: async () => {
-                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`);
+                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The role was inactivated.");
+                                        Alert.alert("EXITO ✅", "El rol fue inactivado.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The role was not inactivated.");
+                                        Alert.alert("ERROR ❌", "El rol no fue inactivado.");
                                     }
                                 }
                             },
@@ -66,24 +66,24 @@ const ViewRoles = ({ navigation }) => {
                     )
                 } else {
                     Alert.alert(
-                        "ACTIVE",
-                        "Are you sure you want to activate the role ?",
+                        "ACTIVAR ✅",
+                        "¿Esta seguro que desea activar el rol?",
                         [
                             {
-                                text: "Cancel",
+                                text: "Cancelar",
                                 style: "cancel",
                             },
                             {
-                                text: "Yes",
+                                text: "Si",
                                 onPress: async () => {
-                                    DataRole.active = true;
-                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`, DataRole);
+                                    DataRol.activo = true;
+                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`, DataRol);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The role was activated.");
+                                        Alert.alert("EXITO ✅", "El rol fue activado.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The role was not activated.");
+                                        Alert.alert("ERROR ❌", "El rol no fue activado.");
                                     }
                                 }
                             },
@@ -100,29 +100,29 @@ const ViewRoles = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.container_title}>
-                <Text style={styles.title}>🔍 View Roles</Text>
+                <Text style={styles.title}>🔍 Ver Roles</Text>
             </View>
             <ScrollView horizontal>
                 <View style={styles.container_table}>
                     <FlatList data={roles} keyExtractor={(item) => item.id} style={styles.table_row}
                         ListHeaderComponent={() => (
                             <View style={styles.table}>
-                                <Text style={styles.table_header}>Name</Text>
-                                <Text style={styles.table_header}>Description</Text>
-                                <Text style={styles.table_header}>State</Text>
-                                <Text style={styles.table_header}> Actions</Text>
+                                <Text style={styles.table_header}>Nombre</Text>
+                                <Text style={styles.table_header}>Descripción</Text>
+                                <Text style={styles.table_header}>Estado</Text>
+                                <Text style={styles.table_header}> Acciones</Text>
                             </View>
                         )} renderItem={({ item }) => (
                             <View style={styles.table}>
-                                <Text style={styles.table_text}>{item.name}</Text>
-                                <Text style={styles.table_text}>{item.description}</Text>
-                                <Text style={styles.table_text}>{item.active ? "Active" : "Inactive"}</Text>
+                                <Text style={styles.table_text}>{item.nombre}</Text>
+                                <Text style={styles.table_text}>{item.descripcion}</Text>
+                                <Text style={styles.table_text}>{item.activo ? "Activo" : "Inactivo"}</Text>
                                 <View style={styles.table_actions}>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => edit(item.id)}>
+                                    <TouchableOpacity style={styles.table_button} onPress={() => editar(item.id)}>
                                         <Text style={styles.button_text}>✏️</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => changeStatus(item.id)}>
-                                        <Text style={styles.button_text}>{item.active ? "🚫" : "✅"}</Text>
+                                    <TouchableOpacity style={styles.table_button} onPress={() => cambiarEstado(item.id)}>
+                                        <Text style={styles.button_text}>{item.activo ? "🚫" : "✅"}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>

@@ -13,110 +13,111 @@ import RNFS from 'react-native-fs';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RegisterProducts = ({ navigation, route }) => {
-    const [productName, setProductName] = useState(null);
-    const [productDescription, setProductDescription] = useState(null);
-    const [productPrice, setProductPrice] = useState(null);
-    const [productStock, setProductStock] = useState(null);
-    const [productImage, setProductImage] = useState(null);
-    const [productCategory, setProductCategory] = useState(null);
-    const [productStatus, setProductStatus] = useState(null);
-    const [productTag, setProductTag] = useState(null);
-    const [productOwner, setProductOwner] = useState(null);
-    const [optionsCategory, setOptionsCategory] = useState([]);
-    const [optionsProductStatus, setOptionsProductStatus] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
+    const [productoNombre, setProductoNombre] = useState(null);
+    const [productoDescripcion, setProductoDescripcion] = useState(null);
+    const [productoPrecio, setProductoPrecio] = useState(null);
+    const [productoExistencias, setProductoExistencias] = useState(null);
+    const [productoImagen, setProductoImagen] = useState(null);
+    const [productoCategoria, setProductoCategoria] = useState(null);
+    const [productoEstado, setProductoEstado] = useState(null);
+    const [productoDestino, setProductoDestino] = useState(null);
+    const [productoPropietario, setProductoPropietario] = useState(null);
+    const [opcionesCategoria, setOpcionesCategoria] = useState([]);
+    const [opcionesProductoEstado, setOpcionesProductoEstado] = useState([]);
+    const [estaEditando, setEstaEditando] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
-            loadProductOptionsCategory();
-            loadOptionsProductStatus();
+            cargarProductoOpcionesCategoria();
+            cargarOpcionesEstadoProducto();
             return (() => {
-                setProductName(null);
-                setProductDescription(null);
-                setProductPrice(null);
-                setProductStock(null);
-                setProductImage(null);
-                setProductCategory(null);
-                setProductStatus(null);
-                setProductTag(null);
-                setOptionsCategory([]);
-                setOptionsProductStatus([]);
-                setIsEditing(false);
+                setProductoNombre(null);
+                setProductoDescripcion(null);
+                setProductoPrecio(null);
+                setProductoExistencias(null);
+                setProductoImagen(null);
+                setProductoCategoria(null);
+                setProductoEstado(null);
+                setProductoDestino(null);
+                setOpcionesCategoria([]);
+                setOpcionesProductoEstado([]);
+                setEstaEditando(false);
             })
         }, [])
     );
 
-    const loadProductOptionsCategory = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `category/secondary_categories`);
+    const cargarProductoOpcionesCategoria = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `categoria/categorias_secundarias`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
-                    setOptionsCategory(response.Data);
+                    setOpcionesCategoria(response.Data);
                 }
             } else {
-                Alert.alert("ERROR ❌", "Can't load the category options.");
+                Alert.alert("ERROR ❌", "No se pudo cargar las opciones de categoria.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const loadOptionsProductStatus = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `product_status`);
+    const cargarOpcionesEstadoProducto = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `estado_producto`);
+
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
-                    setOptionsProductStatus(response.Data);
+                    setOpcionesProductoEstado(response.Data);
                 }
             } else {
-                Alert.alert("ERROR ❌", "Can't load product status options.");
+                Alert.alert("ERROR ❌", "No se pudo cargar las opciones de estado del producto.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const selectImage = () => {
+    const seleccionarImagen = () => {
         launchImageLibrary({ mediaType: 'photo', quality: 1 }, async (response) => {
             if (response.assets && response.assets.length > 0) {
-                const imageUri = response.assets[0].uri;
+                const imagenUri = response.assets[0].uri;
                 try {
-                    const base64Image = await RNFS.readFile(imageUri, 'base64');
-                    setProductImage(base64Image); 
+                    const base64Imagen = await RNFS.readFile(imagenUri, 'base64');
+                    setProductoImagen(base64Imagen); 
                 } catch (error) {
-                    console.log("Error to save the image.");
+                    Alert.alert("ERROR ❌", "No se pudo guardar la imagen.")
                 }
             }
         });
     };
 
-    const createProduct = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const userId = await AsyncStorage.getItem('userId');
+    const crearProducto = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const usuarioId = await AsyncStorage.getItem('usuarioId');
 
-            if (productName != null && productPrice != null && productStock != null && productTag != null && productCategory != null && productStatus != null) {
+            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null) {
                 const data = {
-                    "name": productName,
-                    "description": productDescription,
-                    "price": productPrice,
-                    "stock": productStock,
-                    "image_url": productImage,
-                    "tag": productTag,
-                    "owner": {
-                        "id": userId
+                    "nombre": productoNombre,
+                    "descripcion": productoDescripcion,
+                    "precio": productoPrecio,
+                    "existencias": productoExistencias,
+                    "imagen_url": productoImagen,
+                    "destino": productoDestino,
+                    "propietario": {
+                        "id": usuarioId
                     },
-                    "category": {
-                        "id": productCategory
+                    "categoria": {
+                        "id": productoCategoria
                     },
-                    "product_status": {
-                        "id": productStatus
+                    "estado_producto": {
+                        "id": productoEstado
                     }
                 }
             } else {
                 Alert.alert(
                     "ERROR ❌", 
-                    "Complete the form, the following fields are required to create the product:\n\nname, price, stock, product destination, category and product status."
+                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\nNombre, Precio, Existencias, Destinación del producto, categoria y estado del producto."
                 );
             }
         } else {
@@ -127,40 +128,40 @@ const RegisterProducts = ({ navigation, route }) => {
     return (
         <ScrollView style={styles.ScrollView}>
             <View style={styles.container}>
-                <Text style={styles.title}>{isEditing ? "✏️ Edit Product" : "✏️ Register Product"}</Text>
-                <TextInput style={styles.textInput} placeholder="Name" placeholderTextColor={colors.menu_inactive_option} value={productName} onChangeText={setProductName} />
-                <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Description" placeholderTextColor={colors.menu_inactive_option} value={productDescription} onChangeText={setProductDescription} />
-                <TextInput keyboardType="number-pad" style={styles.textInput} placeholder="Price" placeholderTextColor={colors.menu_inactive_option} value={productPrice} onChangeText={setProductPrice} />
-                <TextInput keyboardType="number-pad" style={styles.textInput} placeholder="Stock" placeholderTextColor={colors.menu_inactive_option} value={productStock} onChangeText={setProductStock} />
-                <CustomButton title="📷 Select Image" onPress={selectImage} />
-                {productImage && (
+                <Text style={styles.title}>{estaEditando ? "✏️ Editar Producto" : "✏️ Registrar Producto"}</Text>
+                <TextInput style={styles.textInput} placeholder="Nombre" placeholderTextColor={colors.menu_inactive_option} value={productoNombre} onChangeText={setProductoNombre} />
+                <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Descripción" placeholderTextColor={colors.menu_inactive_option} value={productoDescripcion} onChangeText={setProductoDescripcion} />
+                <TextInput keyboardType="number-pad" style={styles.textInput} placeholder="Precio" placeholderTextColor={colors.menu_inactive_option} value={productoPrecio} onChangeText={setProductoPrecio} />
+                <TextInput keyboardType="number-pad" style={styles.textInput} placeholder="Existencias" placeholderTextColor={colors.menu_inactive_option} value={productoExistencias} onChangeText={setProductoExistencias} />
+                <CustomButton title="📷 Seleccione la imagen" onPress={seleccionarImagen} />
+                {productoImagen && (
                     <View style={styles.imageContainer}>
-                        <Text style={styles.imageTitle}>🖼️ Preview of image selected</Text>
-                        <Image source={{ uri: `data:image/png;base64,${productImage}` }} style={styles.image} />
+                        <Text style={styles.imageTitle}>🖼️ Vista previa</Text>
+                        <Image source={{ uri: `data:image/png;base64,${productoImagen}` }} style={styles.image} />
                     </View>
                 )}
-                <Text style={styles.firsttextSelect}>Select product category</Text>
-                <Picker style={styles.picker} selectedValue={productCategory} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductCategory(itemValue)}>
-                    <Picker.Item label="None" value={null} />
-                    {optionsCategory.map((option, index) => (
-                        <Picker.Item key={index} label={option.name} value={option.id} />
+                <Text style={styles.firsttextSelect}>Seleccione la categoria del producto</Text>
+                <Picker style={styles.picker} selectedValue={productoCategoria} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoCategoria(itemValue)}>
+                    <Picker.Item label="Ninguno" value={null} />
+                    {opcionesCategoria.map((option, index) => (
+                        <Picker.Item key={index} label={option.nombre} value={option.id} />
                     ))}
                 </Picker>
-                <Text style={styles.textSelect}>Select product status</Text>
-                <Picker style={styles.picker} selectedValue={productStatus} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductStatus(itemValue)}>
-                    <Picker.Item label="None" value={null} />
-                    {optionsProductStatus.map((option, index) => (
-                        <Picker.Item key={index} label={option.name} value={option.id} />
+                <Text style={styles.textSelect}>Seleccione el estado del producto</Text>
+                <Picker style={styles.picker} selectedValue={productoEstado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoEstado(itemValue)}>
+                    <Picker.Item label="Ninguno" value={null} />
+                    {opcionesProductoEstado.map((option, index) => (
+                        <Picker.Item key={index} label={option.nombre} value={option.id} />
                     ))}
                 </Picker>
-                <Text style={styles.textSelect}>Select product destination</Text>
-                <Picker style={styles.picker} selectedValue={productTag} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductTag(itemValue)}>
-                    <Picker.Item label="None" value={null} />
-                    <Picker.Item label="Sale" value="Sale" />
-                    <Picker.Item label="Exchange" value="Exchange" />
-                    <Picker.Item label="Auction" value="Auction" />
+                <Text style={styles.textSelect}>Seleccione el destino del producto</Text>
+                <Picker style={styles.picker} selectedValue={productoDestino} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoDestino(itemValue)}>
+                    <Picker.Item label="Ninguno" value={null} />
+                    <Picker.Item label="Venta" value="Venta" />
+                    <Picker.Item label="Intercambio" value="Intercambio" />
+                    <Picker.Item label="Subasta" value="Subasta" />
                 </Picker>
-                <CustomButton title="Create" onPress={createProduct}/>
+                <CustomButton title="Create" onPress={crearProducto}/>
             </View>
         </ScrollView>
     )

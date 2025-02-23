@@ -10,80 +10,80 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const RegisterRole = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
-    const [roleName, setRoleName] = useState(null);
-    const [roleDescription, setRoleDescription] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
+    const [rolNombre, setRolNombre] = useState(null);
+    const [rolDescripcion, setRolDescripcion] = useState(null);
+    const [estaEditando, setEstaEditando] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
-            loadDataRole();
+            cargarDataRol();
             return (() => {
-                setRoleName(null);
-                setRoleDescription(null);
-                setIsEditing(false);
+                setRolNombre(null);
+                setRolDescripcion(null);
+                setEstaEditando(false);
                 ID = undefined;
             })
         }, [route.params])
     );
 
-    const loadDataRole = async () => {
-        if (Authentication.verifyStoredToken()) {
+    const cargarDataRol = async () => {
+        if (Authentication.verificarTokenGuardado()) {
             if (ID != undefined) {
-                setIsEditing(true);
-                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`);
+                setEstaEditando(true);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
 
                 if (response.Success) {
-                    setRoleName(response.Data.name);
-                    setRoleDescription(response.Data.description);
+                    setRolNombre(response.Data.nombre);
+                    setRolDescripcion(response.Data.descripcion);
                 } else {
-                    Alert.alert("ERROR ❌", "Can't load the data.");
+                    Alert.alert("ERROR ❌", "No se pudo cargar la data.");
                 }
             } else {
-                setIsEditing(false);
+                setEstaEditando(false);
             }
         } else {
             navigation.replace("Login");
         }
     }
-    const createRole = async () => {
-        if (Authentication.verifyStoredToken) {
+    const crearRol = async () => {
+        if (Authentication.verificarTokenGuardado()) {
             const data = {
-                "name": roleName,
-                "description": roleDescription,
+                "nombre": rolNombre,
+                "descripcion": rolDescripcion,
             }
 
-            if (roleName != null) {
-                const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role`, data);
+            if (rolNombre != null) {
+                const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`, data);
 
                 if (response.Success) {
-                    Alert.alert("Success ✅", "The role was created.");
+                    Alert.alert("EXITO ✅", "El rol fue creado.");
                     navigation.replace("Menu");
                 } else {
-                    Alert.alert("ERROR ❌", "The category was not created.");
+                    Alert.alert("ERROR ❌", "El rol no fue creado.");
                 }
             } else {
-                Alert.alert("ERROR ❌", "Please complete the fields.");
+                Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const editRole = async () => {
-        if (Authentication.verifyStoredToken) {
+    const editarRol = async () => {
+        if (Authentication.verificarTokenGuardado()) {
             const data = {
-                "name": roleName,
-                "description": roleDescription,
+                "nombre": rolNombre,
+                "descripcion": rolDescripcion,
             }
 
-            if (data.name != null && data.name != '') {
-                const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role/${ID}`, data);
+            if (data.nombre != null && data.nombre != '') {
+                const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`, data);
 
                 if (response.Success) {
-                    Alert.alert("Success ✅", "The role was edited.");
+                    Alert.alert("EXITO ✅", "El rol fue editado.");
                     navigation.replace("Menu");
                 } else {
-                    Alert.alert("ERROR ❌", "The role was not edited.");
+                    Alert.alert("ERROR ❌", "El rol no fue editado..");
                 }
             }
         } else {
@@ -93,10 +93,10 @@ const RegisterRole = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{isEditing ? "✏️ Edit Role" : "✏️ Register Role"}</Text>
-            <TextInput style={styles.textInput} placeholder="Name" placeholderTextColor={colors.menu_inactive_option} value={roleName} onChangeText={setRoleName} />
-            <TextInput style={styles.textArea} multiline={true} numberOfLines={22} placeholder="Description" placeholderTextColor={colors.menu_inactive_option} value={roleDescription} onChangeText={setRoleDescription} />
-            <CustomButton title={isEditing ? "Edit" : "Create"} onPress={isEditing ? editRole : createRole} />
+            <Text style={styles.title}>{estaEditando ? "✏️ Editar Rol" : "✏️ Registrar Rol"}</Text>
+            <TextInput style={styles.textInput} placeholder="Nombre" placeholderTextColor={colors.menu_inactive_option} value={rolNombre} onChangeText={setRolNombre} />
+            <TextInput style={styles.textArea} multiline={true} numberOfLines={22} placeholder="Descripción" placeholderTextColor={colors.menu_inactive_option} value={rolDescripcion} onChangeText={setRolDescripcion} />
+            <CustomButton title={estaEditando ? "Editar" : "Crear"} onPress={estaEditando ? editarRol : crearRol} />
         </View>
     )
 }

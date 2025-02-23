@@ -17,53 +17,53 @@ import RegisterProducts from "../../screens/Products/RegisterProducts/RegisterPr
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
-    const [options, setOptions] = useState([]);
+    const [opciones, setOpciones] = useState([]);
 
     useEffect(() => {
-        getMenuOptions();
+        getMenuOpciones();
     }, []);
 
-    const getMenuOptions = async () => {
-        const ID = await AsyncStorage.getItem('userId');
-        const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/${ID}/menu_options`);
-        setOptions(response.Data);
+    const getMenuOpciones = async () => {
+        const ID = await AsyncStorage.getItem('usuarioId');
+        const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/${ID}/menu_opciones`);
+        setOpciones(response.Data);
     }
 
-    const handleLogout = async (navigation) => {
-        await AsyncStorage.removeItem('authToken');
-        await AsyncStorage.removeItem('userId');
+    const Salir = async (navigation) => {
+        await AsyncStorage.removeItem('autenticacionToken');
+        await AsyncStorage.removeItem('usuarioId');
         navigation.replace("Login");
     }
 
     return (
         <Drawer.Navigator screenOptions={drawerScreenOptions}>
             <Drawer.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
-            {options.includes("Purchase") && (
+            {opciones.includes("Purchase") && (
                 <Drawer.Screen name="Purchase" component={PurchaseProducts} options={screenOptions.Purchase} />
             )}
-            {options.includes("Sell") && (
+            {opciones.includes("Sell") && (
                 <Drawer.Screen name="Sell" component={SellProducts} options={screenOptions.Sell} />
             )}
-            {options.includes("RegisterCategory") && (
+            {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
             )}
-            {options.includes("ViewCategories") && (
+            {opciones.includes("ViewCategories") && (
                 <Drawer.Screen name="ViewCategories" component={ViewCategories} options={screenOptions.ViewCategories} />
             )}
-            {options.includes("RegisterRole") && (
+            {opciones.includes("RegisterRole") && (
                 <Drawer.Screen name="RegisterRole" component={RegisterRole} options={screenOptions.RegisterRole} />
             )}
-            {options.includes("ViewRoles") && (
+            {opciones.includes("ViewRoles") && (
                 <Drawer.Screen name="ViewRoles" component={ViewRoles} options={screenOptions.ViewRoles} />
             )}
-            {options.includes("RolePermission") && (
+            {opciones.includes("RolePermission") && (
                 <Drawer.Screen name="RolePermission" component={RolePermission} options={screenOptions.RolePermission} />
             )}
-            {options.includes("RegisterProducts") && (
+            {opciones.includes("RegisterProducts") && (
                 <Drawer.Screen name="RegisterProducts" component={RegisterProducts} options={screenOptions.RegisterProducts} />
             )}
             <Drawer.Screen name="Logout" component={() => null} options={screenOptions.Logout} listeners={({navigation}) => ({
-                focus: () => handleLogout(navigation),      
+                focus: () => Salir(navigation),      
             })}/>
         </Drawer.Navigator>
     )

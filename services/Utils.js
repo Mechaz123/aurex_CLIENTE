@@ -22,7 +22,7 @@ class Utils {
 
     async sendGetRequest(endpoint, route) {
         const url = `${endpoint}/${route}`;
-        const token = await AsyncStorage.getItem('authToken');
+        const token = await AsyncStorage.getItem('autenticacionToken');
 
         try {
             const response = await axios.get(url, {headers:{Authorization: `Bearer ${token}`}});
@@ -35,7 +35,7 @@ class Utils {
 
     async sendPostRequest(endpoint, route, body) {
         const url = `${endpoint}/${route}`;
-        const token = await AsyncStorage.getItem('authToken');
+        const token = await AsyncStorage.getItem('autenticacionToken');
         
         try {
             const response = await axios.post(url, body, {
@@ -52,7 +52,7 @@ class Utils {
 
     async sendPutRequest(endpoint, route, body) {
         const url = `${endpoint}/${route}`;
-        const token = await AsyncStorage.getItem('authToken');
+        const token = await AsyncStorage.getItem('autenticacionToken');
 
         try {
             const response = await axios.put(url, body, {
@@ -69,7 +69,7 @@ class Utils {
 
     async sendDeleteRequest(endpoint, route) {
         const url = `${endpoint}/${route}`;
-        const token = await AsyncStorage.getItem('authToken');
+        const token = await AsyncStorage.getItem('autenticacionToken');
 
         try {
             const response = await axios.delete(url,{headers:{Authorization: `Bearer ${token}`}});

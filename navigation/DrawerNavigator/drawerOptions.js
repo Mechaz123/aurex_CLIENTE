@@ -21,41 +21,41 @@ export const drawerScreenOptions = {
 export const screenOptions = {
     Home: {
         title:"AUREX",
-        drawerLabel: "🏠 Home",
+        drawerLabel: "🏠 Inicio",
     },
     Purchase: {
         title: "AUREX",
-        drawerLabel: "🛒 Purchase"
+        drawerLabel: "🛒 Comprar"
     },
     Sell: {
         title: "AUREX",
-        drawerLabel: "💰 Sell"
+        drawerLabel: "💰 Vender"
     },
     RegisterCategory: {
         title: "AUREX",
-        drawerLabel: "✏️ Register Category"
+        drawerLabel: "✏️ Registrar Categoria"
     },
     ViewCategories: {
         title: "AUREX",
-        drawerLabel: "🔍 View Categories"
+        drawerLabel: "🔍 Ver Categorias"
     },
     RegisterRole: {
         title: "AUREX",
-        drawerLabel: "✏️ Register Role"
+        drawerLabel: "✏️ Registrar Rol"
     },
     ViewRoles: {
         title: "AUREX",
-        drawerLabel: "🔍 View Roles"
+        drawerLabel: "🔍 Ver Roles"
     },
     RolePermission: {
         title: "AUREX",
-        drawerLabel: "👮🏻 Manage Role Permissions"
+        drawerLabel: "👮🏻 Gestionar permisos"
     },
     RegisterProducts: {
         title: "AUREX",
-        drawerLabel: "✏️ Register Products" 
+        drawerLabel: "✏️ Registrar Productos" 
     },
     Logout: {
-        drawerLabel: "🚪 Logout",
+        drawerLabel: "🚪 Salir",
     },
 }

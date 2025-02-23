@@ -6,59 +6,59 @@ import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from "react
 import styles from "./styles";
 
 const ViewCategories = ({ navigation }) => {
-    const [categories, setCategories] = useState([]);
+    const [categorias, setCategorias] = useState([]);
 
     useEffect(() => {
-        loadCategories();
+        cargarCategorias();
         return (() => {
-            setCategories([]);
+            setCategorias([]);
         })
     }, []);
 
-    const loadCategories = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`);
+    const cargarCategorias = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`);
 
             if (response.Success) {
-                setCategories(response.Data);
+                setCategorias(response.Data);
             } else {
-                Alert.alert("ERROR ❌", "Can't load the categories.")
+                Alert.alert("ERROR ❌", "No se pudo cargar las categorias.")
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const edit = async (ID) => {
+    const editar = async (ID) => {
         navigation.navigate("RegisterCategory", { ID });
     }
 
-    const changeStatus = async (ID) => {
-        if (Authentication.verifyStoredToken) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
+    const cambiarEstado = async (ID) => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
 
             if (response.Success) {
-                let DataCategory = response.Data;
+                let DataCategoria = response.Data;
 
-                if (DataCategory.active) {
+                if (DataCategoria.activo) {
                     Alert.alert(
-                        "INACTIVE",
-                        "Are you sure you want to inactivate the category ?",
+                        "INACTIVAR 🚫",
+                        "¿Esta seguro/a de inactivar la categoria?",
                         [
                             {
-                                text: "Cancel",
+                                text: "Cancelar",
                                 style: "cancel",
                             },
                             {
-                                text: "Yes",
+                                text: "Si",
                                 onPress: async () => {
-                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
+                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The category was inactivated.");
+                                        Alert.alert("EXITO ✅", "La categoria fue inactivada.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The category was not inactivated.");
+                                        Alert.alert("ERROR ❌", "La categoria no fue inactivada.");
                                     }
                                 }
                             },
@@ -67,24 +67,24 @@ const ViewCategories = ({ navigation }) => {
                     )
                 } else {
                     Alert.alert(
-                        "ACTIVE",
-                        "Are you sure you want to activate the category ?",
+                        "ACTIVAR ✅",
+                        "¿Esta seguro de activar la categoria?",
                         [
                             {
-                                text: "Cancel",
+                                text: "Cancelar",
                                 style: "cancel",
                             },
                             {
-                                text: "Yes",
+                                text: "Si",
                                 onPress: async () => {
-                                    DataCategory.active = true;
-                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, DataCategory);
+                                    DataCategoria.activo = true;
+                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, DataCategoria);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The category was activated.");
+                                        Alert.alert("EXITO ✅", "La categoria fue activada.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The category was not activated.");
+                                        Alert.alert("ERROR ❌", "La categoria no fue activada.");
                                     }
                                 }
                             },
@@ -101,31 +101,31 @@ const ViewCategories = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.container_title}>
-                <Text style={styles.title}>🔍 View Categories</Text>
+                <Text style={styles.title}>🔍 Ver Categorias</Text>
             </View>
             <ScrollView horizontal>
                 <View style={styles.container_table}>
-                    <FlatList data={categories} keyExtractor={(item) => item.id} style={styles.table_row}
+                    <FlatList data={categorias} keyExtractor={(item) => item.id} style={styles.table_row}
                         ListHeaderComponent={() => (
                             <View style={styles.table}>
-                                <Text style={styles.table_header}>Name</Text>
-                                <Text style={styles.table_header}>Description</Text>
-                                <Text style={styles.table_header}>State</Text>
-                                <Text style={styles.table_header}>Parent Category</Text>
-                                <Text style={styles.table_header}> Actions</Text>
+                                <Text style={styles.table_header}>Nombre</Text>
+                                <Text style={styles.table_header}>Descripción</Text>
+                                <Text style={styles.table_header}>Estado</Text>
+                                <Text style={styles.table_header}>Categoria principal</Text>
+                                <Text style={styles.table_header}>Acciones</Text>
                             </View>
                         )} renderItem={({ item }) => (
                             <View style={styles.table}>
-                                <Text style={styles.table_text}>{item.name}</Text>
-                                <Text style={styles.table_text}>{item.description}</Text>
-                                <Text style={styles.table_text}>{item.active ? "Active" : "Inactive"}</Text>
-                                <Text style={styles.table_text}>{item.parentCategory?.name ? item.parentCategory.name : "None"}</Text>
+                                <Text style={styles.table_text}>{item.nombre}</Text>
+                                <Text style={styles.table_text}>{item.descripcion}</Text>
+                                <Text style={styles.table_text}>{item.activo ? "Activo" : "Inactivo"}</Text>
+                                <Text style={styles.table_text}>{item.categoria_principal?.nombre ? item.categoria_principal.nombre : "Ninguno"}</Text>
                                 <View style={styles.table_actions}>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => edit(item.id)}>
+                                    <TouchableOpacity style={styles.table_button} onPress={() => editar(item.id)}>
                                         <Text style={styles.button_text}>✏️</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => changeStatus(item.id)}>
-                                        <Text style={styles.button_text}>{item.active ? "🚫" : "✅"}</Text>
+                                    <TouchableOpacity style={styles.table_button} onPress={() => cambiarEstado(item.id)}>
+                                        <Text style={styles.button_text}>{item.activo ? "🚫" : "✅"}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>

@@ -9,63 +9,66 @@ import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import colors from "../../styles/colors";
 
 const LoginScreen = ({ navigation }) => {
-    const [username, setUsername] = useState('');
-    const [supported, setSupported] = useState(false);
-    const [enabled, setEnabled] = useState(false);
+    const [nombreUsuario, setNombreUsuario] = useState('');
+    const [soportado, setSoportado] = useState(false);
+    const [habilitado, setHabilitado] = useState(false);
 
     useEffect(() => {
-        verifyStoredToken();
+        verificarTokenGuardado();
         nfcManager.start();
-        requirements();
+        requerimientos();
         return (() => {
             nfcManager.close();
+            setNombreUsuario('');
+            setSoportado(false);
+            setHabilitado(false);
         });
     }, []);
 
-    const requirements = async () => {
-        const isSupported = await nfcManager.isSupported();
-        const isEnabled = await nfcManager.isEnabled();
-        setSupported(isSupported);
-        setEnabled(isEnabled);
+    const requerimientos = async () => {
+        const estaSoportado = await nfcManager.isSupported();
+        const estaHabilitado = await nfcManager.isEnabled();
+        setSoportado(estaSoportado);
+        setHabilitado(estaHabilitado);
     }
 
-    const verifyStoredToken = async () => {
-        const token = await AsyncStorage.getItem('authToken');
+    const verificarTokenGuardado = async () => {
+        const token = await AsyncStorage.getItem('autenticacionToken');
         try {
             if (token != null) {
-                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/verify_authentication`);
-                if (response.Data.valid) {
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/verificar_autenticacion`);
+                if (response.Data.valido) {
                     navigation.replace('Menu');
                 } else {
-                    await AsyncStorage.removeItem('authToken');
-                    await AsyncStorage.removeItem('userId');
+                    await AsyncStorage.removeItem('autenticacionToken');
+                    await AsyncStorage.removeItem('usuarioId');
                 }
             }
         } catch (error) {
-            await AsyncStorage.removeItem('authToken');
-            await AsyncStorage.removeItem('userId');
+            await AsyncStorage.removeItem('autenticacionToken');
+            await AsyncStorage.removeItem('usuarioId');
         }
     }
 
-    const handleLogin = () => {
-        if (username) {
-            if (supported && enabled) {
-                navigation.replace('NFCAuthentication', { username });
-            } else if (!supported) {
-                Alert.alert("Error", `Your phone don't have NFC technology.`);
-            } else if (!enabled) {
-                Alert.alert('Warning', `Please turn on your phone's NFC technology and restart the app.`)
+    const inicioSesion = () => {
+        if (nombreUsuario) {
+            if (soportado && habilitado) {
+                navigation.replace('NFCAuthentication', { nombreUsuario });
+            } else if (!soportado) {
+                Alert.alert("ERROR ❌", `Su dispositivo no tiene tecnología NFC.`);
+            } else if (!habilitado) {
+                Alert.alert('ADVERTENCIA ⚠️', `Por favor encienda la tecnología NFC de su dispositivo un reinicie la aplicación.`)
             }
         } else {
-            alert('Please enter your username.');
+            Alert.alert("ERROR ❌", `Por favor ingrese su nombre de usuario`);
         }
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>AUREX</Text>
-            <TextInput style={styles.input} placeholder="Username" placeholderTextColor={colors.menu_inactive_option} value={username} onChangeText={setUsername} />
-            <CustomButton title="Log in" onPress={handleLogin} />
+            <TextInput style={styles.input} placeholder="Nombre de usuario" placeholderTextColor={colors.menu_inactive_option} value={nombreUsuario} onChangeText={setNombreUsuario} />
+            <CustomButton title="Iniciar Sesión" onPress={inicioSesion} />
         </View>
     );
 };

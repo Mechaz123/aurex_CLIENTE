@@ -9,6 +9,8 @@ const useNFCScanner = (scanTimeout = 10000) => {
         nfcManager.start();
         return () => {
             nfcManager.close();
+            setTag(null);
+            setError(null);
         };
     }, []);
 
@@ -23,7 +25,7 @@ const useNFCScanner = (scanTimeout = 10000) => {
             setTag(tag);
             clearTimeout(timeout);
         } catch (error) {
-            setError('Your card could not be detected. Please try again.');
+            setError('Su tarjeta no pudo ser detectada, por favor intente de nuevo.');
         } finally {
             nfcManager.cancelTechnologyRequest();
             clearTimeout(timeout);

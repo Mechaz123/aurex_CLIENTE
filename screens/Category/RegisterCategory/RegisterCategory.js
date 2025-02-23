@@ -11,146 +11,146 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const RegisterCategory = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
-    const [categoryName, setCategoryName] = useState(null);
-    const [categoryDescription, setCategoryDescription] = useState(null);
-    const [showPicker, setShowPicker] = useState(false);
-    const [parentCategory, setParentCategory] = useState(null);
-    const [optionsCategory, setOptionsCategory] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
+    const [categoriaNombre, setCategoriaNombre] = useState(null);
+    const [categoriaDescripcion, setCategoriaDescripcion] = useState(null);
+    const [mostrarSelector, setMostrarSelector] = useState(false);
+    const [categoriaPrincipal, setCategoriaPrincipal] = useState(null);
+    const [opcionesCategoria, setOpcionesCategoria] = useState([]);
+    const [estaEditando, setEstaEditando] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
-            loadDataCategory();
-            loadOptionsCategory();
+            cargarDataCategoria();
+            cargarOpcionesCategoria();
             return (() => {
-                setCategoryName(null);
-                setCategoryDescription(null);
-                setShowPicker(false);
-                setParentCategory(null);
-                setOptionsCategory([]);
-                setIsEditing(false);
+                setCategoriaNombre(null);
+                setCategoriaDescripcion(null);
+                setMostrarSelector(false);
+                setCategoriaPrincipal(null);
+                setOpcionesCategoria([]);
+                setEstaEditando(false);
                 ID = undefined;
             })
         }, [route.params])
     );
 
-    const loadDataCategory = async () => {
-        if (Authentication.verifyStoredToken()) {
+    const cargarDataCategoria = async () => {
+        if (Authentication.verificarTokenGuardado()) {
             if (ID != undefined) {
-                setIsEditing(true);
-                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`);
+                setEstaEditando(true);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
     
                 if (response.Success) {
-                    setCategoryName(response.Data.name);
-                    setCategoryDescription(response.Data.description);
+                    setCategoriaNombre(response.Data.nombre);
+                    setCategoriaDescripcion(response.Data.descripcion);
 
-                    if (response.Data.parentCategory != null) {
-                        setShowPicker(true);
-                        setParentCategory(response.Data.parentCategory.id);
+                    if (response.Data.categoria_principal != null) {
+                        setMostrarSelector(true);
+                        setCategoriaPrincipal(response.Data.categoria_principal.id);
                     }
                 } else {
-                    Alert.alert("ERROR ❌", "Can't load the data.");
+                    Alert.alert("ERROR ❌", "No se pudo cargar la data.");
                 }
             } else {
-                setIsEditing(false);
+                setEstaEditando(false);
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const loadOptionsCategory = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `category/parent_categories`);
+    const cargarOpcionesCategoria = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `categoria/categorias_principales`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
-                    setOptionsCategory(response.Data);
+                    setOpcionesCategoria(response.Data);
                 }
             } else {
-                Alert("ERROR", "Can't load the options.");
+                Alert("ERROR", "No se pudo cargar las opciones.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const createCategory = async () => {
-        if (Authentication.verifyStoredToken()) {
+    const crearCategoria = async () => {
+        if (Authentication.verificarTokenGuardado()) {
             let data = {
-                "name": categoryName,
-                "description": categoryDescription,
+                "nombre": categoriaNombre,
+                "descripcion": categoriaDescripcion,
             }
 
-            if (categoryName != null) {
-                if (showPicker) {
-                    if (parentCategory != null) {
-                        data.parentCategory = parentCategory;
-                        const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`, data);
+            if (categoriaNombre != null) {
+                if (mostrarSelector) {
+                    if (categoriaPrincipal != null) {
+                        data.categoria_principal = categoriaPrincipal;
+                        const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`, data);
 
                         if (response.Success) {
-                            Alert.alert("Success ✅", "The category was created.");
+                            Alert.alert("EXITO ✅", "La categoria ha sido creada.");
                             navigation.replace("Menu");
                         } else {
-                            Alert.alert("ERROR ❌", "The category was not created.");
+                            Alert.alert("ERROR ❌", "La categoria no fue creada.");
                         }
                     } else {
-                        Alert.alert("ERROR ❌", "Please select a parent category.");
+                        Alert.alert("ERROR ❌", "Por favor seleccione la categoria principal.");
                     }
                 } else {
-                    data.parentCategory = null;
-                    const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category`, data);
+                    data.categoria_principal = null;
+                    const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`, data);
 
                     if (response.Success) {
-                        Alert.alert("Success ✅", "The category was created.");
+                        Alert.alert("Success ✅", "La categoria ha sido creada.");
                         navigation.replace("Menu");
                     } else {
-                        Alert.alert("ERROR ❌", "The category was not created.");
+                        Alert.alert("ERROR ❌", "La categoria no fue creada.");
                     }
                 }
             } else {
-                Alert.alert("ERROR ❌", "Please complete the fields.");
+                Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const editCategory = async () => {
-        if (Authentication.verifyStoredToken) {
+    const editarCategoria = async () => {
+        if (Authentication.verificarTokenGuardado) {
             let data = {
-                "name": categoryName,
-                "description": categoryDescription,
+                "nombre": categoriaNombre,
+                "descripcion": categoriaDescripcion,
             }
 
-            if (data.name != null && data.name != '') {
-                if (showPicker) {
-                    if (parentCategory != null) {
-                        data.parentCategory = parentCategory;
-                        const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, data);
+            if (data.nombre != null && data.nombre != '') {
+                if (mostrarSelector) {
+                    if (categoriaPrincipal != null) {
+                        data.categoria_principal = categoriaPrincipal;
+                        const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, data);
 
                         if (response.Success) {
-                            Alert.alert("Success ✅", "The category was edited.");
+                            Alert.alert("EXITO ✅", "La categoria fue editada.");
                             navigation.replace("Menu");
                         } else {
-                            Alert.alert("ERROR ❌", "The category was not edited.");
+                            Alert.alert("ERROR ❌", "La categoria no fue editada.");
                         }
                     } else {
-                        Alert.alert("ERROR ❌", "Please select a parent category.");
+                        Alert.alert("ERROR ❌", "Por favor seleccione una categoria principal.");
                     }
                 } else {
-                    data.parentCategory = null;
-                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `category/${ID}`, data);
+                    data.categoria_principal = null;
+                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, data);
 
                     if (response.Success) {
-                        Alert.alert("Success ✅", "The category was edited.");
+                        Alert.alert("EXITO ✅", "La categoria fue editada.");
                         navigation.replace("Menu");
                     } else {
-                        Alert.alert("ERROR ❌", "The category was not edited.");
+                        Alert.alert("ERROR ❌", "La categoria no fue editada.");
                     }
                 }
             } else {
-                Alert.alert("ERROR ❌", "Please complete the fields.");
+                Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
 
         } else {
@@ -160,25 +160,25 @@ const RegisterCategory = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{isEditing ? "✏️ Edit Category" : "✏️ Register Category"}</Text>
-            <TextInput style={styles.textInput} placeholder="Name" placeholderTextColor={colors.menu_inactive_option} value={categoryName} onChangeText={setCategoryName} required />
-            <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Description" placeholderTextColor={colors.menu_inactive_option} value={categoryDescription} onChangeText={setCategoryDescription} />
+            <Text style={styles.title}>{estaEditando ? "✏️ Editar Categoria" : "✏️ Registrar Categoria"}</Text>
+            <TextInput style={styles.textInput} placeholder="Nombre" placeholderTextColor={colors.menu_inactive_option} value={categoriaNombre} onChangeText={setCategoriaNombre} />
+            <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Descripción" placeholderTextColor={colors.menu_inactive_option} value={categoriaDescripcion} onChangeText={setCategoriaDescripcion} />
             <View style={styles.switchContainer}>
-                <Text style={styles.text}>Is it a secondary category: </Text>
-                <Switch thumbColor={showPicker ? colors.primary : colors.menu_inactive_option} trackColor={{ true: colors.primary_degraded }} value={showPicker} onValueChange={setShowPicker} />
+                <Text style={styles.text}>Es una categoria secundaria: </Text>
+                <Switch thumbColor={mostrarSelector ? colors.primary : colors.menu_inactive_option} trackColor={{ true: colors.primary_degraded }} value={mostrarSelector} onValueChange={setMostrarSelector} />
             </View>
-            {showPicker && (
+            {mostrarSelector && (
                 <View style={styles.selectContainer}>
-                    <Text style={styles.textSelectContainer}>Select the principal category</Text>
-                    <Picker style={styles.picker} selectedValue={parentCategory} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setParentCategory(itemValue)} >
-                        <Picker.Item label="None" value={null} />
-                        {optionsCategory.map((option, index) => (
-                            <Picker.Item key={index} label={option.name} value={option.id} />
+                    <Text style={styles.textSelectContainer}>Seleccione una categoria principal</Text>
+                    <Picker style={styles.picker} selectedValue={categoriaPrincipal} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setCategoriaPrincipal(itemValue)} >
+                        <Picker.Item label="Ninguna" value={null} />
+                        {opcionesCategoria.map((opcion, index) => (
+                            <Picker.Item key={index} label={opcion.nombre} value={opcion.id} />
                         ))}
                     </Picker>
                 </View>
             )}
-            <CustomButton title={isEditing ? "Edit" : "Create"} onPress={isEditing ? editCategory : createCategory} />
+            <CustomButton title={estaEditando ? "Editar" : "Crear"} onPress={estaEditando ? editarCategoria : crearCategoria} />
         </View>
     );
 };

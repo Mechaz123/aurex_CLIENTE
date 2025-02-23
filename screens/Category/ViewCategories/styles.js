@@ -51,7 +51,7 @@ export default StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: colors.text_basic,
         width: 80,
-        height: 20,
+        height: 30,
     },
     table_text: {
         textAlign: 'center',

@@ -11,70 +11,70 @@ import { ScrollView } from "react-native-gesture-handler";
 import CustomButton from "../../components/CustomButton/CustomButton";
 
 const RolePermission = ({ navigation }) => {
-    const [optionsRole, setOptionsRole] = useState([]);
-    const [optionsPermission, setOptionsPermission] = useState([]);
-    const [roleSelected, setRoleSelected] = useState(null);
-    const [permissionSelected, setPermissionSelected] = useState(null);
-    const [rolePermission, setRolePermission] = useState([]);
-    const [showTable, setShowTable] = useState(false);
-    const [showSwitch, setShowSwitch] = useState(false);
-    const [showPicker, setShowPicker] = useState(false);
-
+    const [opcionesRol, setOpcionesRol] = useState([]);
+    const [opcionesPermiso, setOpcionesPermiso] = useState([]);
+    const [rolSeleccionado, setRolSeleccionado] = useState(null);
+    const [permisoSeleccionado, setPermisoSeleccionado] = useState(null);
+    const [rolPermiso, setRolPermiso] = useState([]);
+    const [mostrarTabla, setMostrarTabla] = useState(false);
+    const [mostrarSwitch, setMostrarSwitch] = useState(false);
+    const [mostrarSelector, setMostrarSelector] = useState(false);
+    
     useFocusEffect(
         useCallback(() => {
-            loadOptionsRole();
-            loadOptionsPermission();
+            cargarOpcionesRol();
+            cargarOpcionesPermiso();
             return (() => {
-                setOptionsRole([]);
-                setOptionsPermission([]);
-                setRoleSelected(null);
-                setPermissionSelected(null);
-                setRolePermission([]);
-                setShowTable(false);
-                setShowSwitch(false);
-                setShowPicker(false);
+                setOpcionesRol([]);
+                setOpcionesPermiso([]);
+                setRolSeleccionado(null);
+                setPermisoSeleccionado(null);
+                setRolPermiso([]);
+                setMostrarTabla(false);
+                setMostrarSwitch(false);
+                setMostrarSelector(false);
             });
         }, [])
     );
 
-    const loadOptionsRole = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role`);
+    const cargarOpcionesRol = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
-                    setOptionsRole(response.Data);
+                    setOpcionesRol(response.Data);
                 } else {
-                    Alert.alert("WARNING ⚠️", "There are no roles in the system.");
+                    Alert.alert("ADVERTENCIA ⚠️", "No existen roles en el sistema.");
                 }
             } else {
-                Alert("ERROR ❌", "Can't load the options.");
+                Alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const loadRolePermission = async (itemValue) => {
-        if (Authentication.verifyStoredToken()) {
-            setShowSwitch(false);
-            setShowPicker(false);
+    const cargarRolePermiso = async (itemValue) => {
+        if (Authentication.verificarTokenGuardado()) {
+            setMostrarSwitch(false);
+            setMostrarSelector(false);
             if (itemValue != null) {
-                setRoleSelected(itemValue);
-                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `role/${itemValue}/permission`);
+                setRolSeleccionado(itemValue);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `rol/${itemValue}/permisos`);
 
                 if (response.Success) {
                     if (Object.keys(response.Data).length != 0) {
-                        setRolePermission(response.Data);
-                        setShowTable(true);
+                        setRolPermiso(response.Data);
+                        setMostrarTabla(true);
                     } else {
-                        setRolePermission([]);
-                        setShowTable(false);
-                        Alert.alert("WARNING ⚠️", "The role don't have permissions or they are not active.");
+                        setRolPermiso([]);
+                        setMostrarTabla(false);
+                        Alert.alert("ADVERTENCIA ⚠️", "El rol no tiene permisos o los permisos no se encuentran activos.");
                     }
-                    setShowSwitch(true);
+                    setMostrarSwitch(true);
                 } else {
-                    Alert("ERROR ❌", "Can't load the permissions of the role.");
+                    Alert("ERROR ❌", "No se pueden cargar los permisos del rol.");
                 }
             }
         } else {
@@ -82,50 +82,50 @@ const RolePermission = ({ navigation }) => {
         }
     }
 
-    const loadOptionsPermission = async () => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `permission/active`);
+    const cargarOpcionesPermiso = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `permiso/activos`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
-                    setOptionsPermission(response.Data);
+                    setOpcionesPermiso(response.Data);
                 } else {
-                    Alert.alert("WARNING ⚠️", "There are no active permissions in the system.");
+                    Alert.alert("ADVERTENCIA ⚠️", "No existen permisos activos en el sistema.");
                 }
             } else {
-                Alert("ERROR ❌", "Can't load the options.");
+                Alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
             navigation.replace("Login");
         }
     }
 
-    const changeStatus = async (ID) => {
-        if (Authentication.verifyStoredToken()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role_permission/${ID}`);
+    const cambiarEstado = async (ID) => {
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`);
 
             if (response.Success) {
-                let DataRolePermission = response.Data;
+                let DataRolPermiso = response.Data;
 
-                if (DataRolePermission.active) {
+                if (DataRolPermiso.activo) {
                     Alert.alert(
-                        "INACTIVE",
-                        "Are you sure you want to inactivate the Role-Permission ?",
+                        "INACTIVAR 🚫",
+                        "¿Está seguro que desea inactivar el permiso del rol?",
                         [
                             {
-                                text: "Cancel",
+                                text: "Cancelar",
                                 style: "cancel",
                             },
                             {
-                                text: "Yes",
+                                text: "Si",
                                 onPress: async () => {
-                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role_permission/${ID}`);
+                                    const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The role-permission was inactivated.");
+                                        Alert.alert("EXITO ✅", "El permiso del rol fue inactivado.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The role-permission was not inactivated.");
+                                        Alert.alert("ERROR ❌", "El permiso del rol no fue inactivado.");
                                     }
                                 }
                             },
@@ -134,24 +134,24 @@ const RolePermission = ({ navigation }) => {
                     )
                 } else {
                     Alert.alert(
-                        "ACTIVE",
-                        "Are you sure you want to activate the role-permission ?",
+                        "ACTIVO ✅",
+                        "Esta seguro que desea activar el permiso del rol?",
                         [
                             {
-                                text: "Cancel",
+                                text: "Cancelar",
                                 style: "cancel",
                             },
                             {
-                                text: "Yes",
+                                text: "Si",
                                 onPress: async () => {
-                                    DataRolePermission.active = true;
-                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role_permission/${ID}`, DataRolePermission);
+                                    DataRolPermiso.activo = true;
+                                    const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`, DataRolPermiso);
 
                                     if (response.Success) {
-                                        Alert.alert("Success ✅", "The role-permission was activated.");
+                                        Alert.alert("EXITO ✅", "El permiso del rol fue activado.");
                                         navigation.replace("Menu");
                                     } else {
-                                        Alert.alert("ERROR ❌", "The role-permission was not activated.");
+                                        Alert.alert("ERROR ❌", "El permiso del rol no fue activado.");
                                     }
                                 }
                             },
@@ -165,33 +165,33 @@ const RolePermission = ({ navigation }) => {
         }
     }
 
-    const createRolePermission = async () => {
-        if (Authentication.verifyStoredToken()) {
-            if (permissionSelected != null) {
-                const verifyRolePermissionRecords = rolePermission.filter((data) => (data.role.id == roleSelected) && (data.permission.id == permissionSelected)).length;
-                if (verifyRolePermissionRecords == 0) {
+    const crearRolPermiso = async () => {
+        if (Authentication.verificarTokenGuardado()) {
+            if (permisoSeleccionado != null) {
+                const verificarRolPermisoCreados = rolPermiso.filter((data) => (data.rol.id == rolSeleccionado) && (data.permiso.id == permisoSeleccionado)).length;
+                if (verificarRolPermisoCreados == 0) {
                     const data = {
-                        "role": {
-                            "id": roleSelected,
+                        "rol": {
+                            "id": rolSeleccionado,
                         },
-                        "permission": {
-                            "id": permissionSelected,
+                        "permiso": {
+                            "id": permisoSeleccionado,
                         }
                     }
 
-                    const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `role_permission`, data);
+                    const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso`, data);
 
                     if (response.Success) {
-                        Alert.alert("Success ✅", "The role-permission was created.");
+                        Alert.alert("EXITO ✅", "El rol-permiso fue creado.");
                         navigation.replace("Menu");
                     } else {
-                        Alert.alert("ERROR ❌", "The role-permission was not created.");
+                        Alert.alert("ERROR ❌", "El rol-permiso no fue creado.");
                     }
                 } else {
-                    Alert.alert("ERROR ❌", "The role-permission already exist.");
+                    Alert.alert("ERROR ❌", "El rol-permiso ya existe.");
                 }
             } else {
-                Alert.alert("ERROR ❌", "Please select a permission for the role.");
+                Alert.alert("ERROR ❌", "Por favor seleccione un permiso para el rol.");
             }
         } else {
             navigation.replace("Login");
@@ -201,32 +201,32 @@ const RolePermission = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <ScrollView>
-                <Text style={styles.title}>👮🏻 Manage Role Permissions</Text>
+                <Text style={styles.title}>👮🏻 Gestionar permisos de roles</Text>
                 <View style={styles.selectContainer}>
-                    <Text style={styles.textSelectContainer}>Select the role to view its permissions.</Text>
-                    <Picker style={styles.picker} selectedValue={roleSelected} dropdownIconColor={colors.primary} onValueChange={(itemValue) => loadRolePermission(itemValue)}>
-                        {optionsRole.map((option, index) => (
-                            <Picker.Item key={index} label={option.name} value={option.id} />
+                    <Text style={styles.textSelectContainer}>Seleccione un rol para ver sus permisos</Text>
+                    <Picker style={styles.picker} selectedValue={rolSeleccionado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => cargarRolePermiso(itemValue)}>
+                        {opcionesRol.map((option, index) => (
+                            <Picker.Item key={index} label={option.nombre} value={option.id} />
                         ))}
                     </Picker>
                 </View>
-                {showTable && (
+                {mostrarTabla && (
                     <ScrollView horizontal>
                         <View style={styles.container_table}>
-                            <FlatList data={rolePermission} keyExtractor={(item) => item.id} style={styles.table_row}
+                            <FlatList data={rolPermiso} keyExtractor={(item) => item.id} style={styles.table_row}
                                 ListHeaderComponent={() => (
                                     <View style={styles.table}>
-                                        <Text style={styles.table_header}>Permission</Text>
-                                        <Text style={styles.table_header}>State</Text>
-                                        <Text style={styles.table_header}>Actions</Text>
+                                        <Text style={styles.table_header}>Permiso</Text>
+                                        <Text style={styles.table_header}>Estado</Text>
+                                        <Text style={styles.table_header}>Acciones</Text>
                                     </View>
                                 )} renderItem={({ item }) => (
                                     <View style={styles.table}>
-                                        <Text style={styles.table_text}>{item.permission.name}</Text>
-                                        <Text style={styles.table_text}>{item.active ? "Active" : "Inactive"}</Text>
+                                        <Text style={styles.table_text}>{item.permiso.nombre}</Text>
+                                        <Text style={styles.table_text}>{item.activo ? "Activo" : "Inactivo"}</Text>
                                         <View style={styles.table_actions}>
-                                            <TouchableOpacity style={styles.table_button} onPress={() => changeStatus(item.id)}>
-                                                <Text style={styles.button_text}>{item.active ? "🚫" : "✅"}</Text>
+                                            <TouchableOpacity style={styles.table_button} onPress={() => cambiarEstado(item.id)}>
+                                                <Text style={styles.button_text}>{item.activo ? "🚫" : "✅"}</Text>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
@@ -234,21 +234,21 @@ const RolePermission = ({ navigation }) => {
                         </View>
                     </ScrollView>
                 )}
-                {showSwitch && (
+                {mostrarSwitch && (
                     <View style={styles.switchContainer}>
-                        <Text style={styles.text}>Add new permission ? </Text>
-                        <Switch thumbColor={showPicker ? colors.primary : colors.menu_inactive_option} trackColor={{ true: colors.primary_degraded }} value={showPicker} onValueChange={setShowPicker} />
+                        <Text style={styles.text}>¿Añadir nuevo permiso?</Text>
+                        <Switch thumbColor={mostrarSelector ? colors.primary : colors.menu_inactive_option} trackColor={{ true: colors.primary_degraded }} value={mostrarSelector} onValueChange={setMostrarSelector} />
                     </View>
                 )}
-                {showPicker && (
+                {mostrarSelector && (
                     <View style={styles.selectContainer}>
-                        <Text style={styles.textSelectContainer}>Select the permission you want to assign to the role</Text>
-                        <Picker style={styles.picker} selectedValue={permissionSelected} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setPermissionSelected(itemValue)}>
-                            {optionsPermission.map((option, index) => (
-                                <Picker.Item key={index} label={option.name} value={option.id} />
+                        <Text style={styles.textSelectContainer}>Seleccione el permiso que desea agregar al rol</Text>
+                        <Picker style={styles.picker} selectedValue={permisoSeleccionado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setPermisoSeleccionado(itemValue)}>
+                            {opcionesPermiso.map((option, index) => (
+                                <Picker.Item key={index} label={option.nombre} value={option.id} />
                             ))}
                         </Picker>
-                        <CustomButton title="Add Permission" onPress={createRolePermission} />
+                        <CustomButton title="Añadir permiso" onPress={crearRolPermiso} />
                     </View>
                 )}
             </ScrollView>

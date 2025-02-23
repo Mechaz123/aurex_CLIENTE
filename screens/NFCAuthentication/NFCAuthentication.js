@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
-import CustomButton from '../../components/CustomButton/CustomButton';
 import useNFCScanner from '../../hooks/useNFCScanner';
 import utils from '../../services/Utils';
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NFCAuthentication = ({ navigation, route }) => {
-    const { username } = route.params;
+    const { nombreUsuario } = route.params;
     const { tag, error, scanNFC } = useNFCScanner(10000);
 
     useEffect(() => {
@@ -17,47 +16,47 @@ const NFCAuthentication = ({ navigation, route }) => {
 
     useEffect(() => {
         if (error != null) {
-            Alert.alert('Error', error);
+            Alert.alert('ERROR ❌', error);
             navigation.replace('Login');
         } else if (tag != null) {
-            sendAuthentication();
+            enviarAutenticacion();
         }
     }, [error, tag, navigation]);
 
-    const sendAuthentication = async () => {
+    const enviarAutenticacion = async () => {
         let jsonData = utils.ConvertNfcToJson(tag);
-        jsonData.username = username;
-        const userData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `user/authentication`, jsonData);
+        jsonData.nombre_usuario = nombreUsuario;
+        const usuarioData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/autenticacion`, jsonData);
 
-        if (userData.Data != null) {
-            await storeToken(userData.Data.token, jsonData.id);
+        if (usuarioData.Data != null) {
+            await guardarToken(usuarioData.Data.token, jsonData.id);
             navigation.replace('Menu');
         } else {
-            Alert.alert("Error:", "The user or card are invalid.");
+            Alert.alert("ERROR ❌", "El nombre de usuario o la tarjeta son incorrectos.");
             navigation.replace('Login');
         }
     }
 
-    const storeToken = async (token, id) => {
+    const guardarToken = async (token, id) => {
         try {
-            AsyncStorage.setItem('authToken', token);
-            AsyncStorage.setItem('userId', id);
+            AsyncStorage.setItem('autenticacionToken', token);
+            AsyncStorage.setItem('usuarioId', id);
         } catch (error) {
-            Alert.alert("Error:", "Authentication failed please try again.");
+            Alert.alert("ERROR ❌", "Autenticación fallida, por favor intente de nuevo.");
             navigation.replace('Login');
         }
     }
 
-    const handleCancel = () => {
+    const Cancelar = () => {
         navigation.replace('Login');
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>AUREX</Text>
-            <Text style={styles.text}>Please swipe your card to log in.</Text>
-            <TouchableOpacity style={styles.button} onPress={handleCancel}>
-                <Text style={styles.text_button}>Cancel</Text>
+            <Text style={styles.text}>Por favor acerque su tarjeta al dispositivo.</Text>
+            <TouchableOpacity style={styles.button} onPress={Cancelar}>
+                <Text style={styles.text_button}>Cancelar</Text>
             </TouchableOpacity>
         </View>
     );
