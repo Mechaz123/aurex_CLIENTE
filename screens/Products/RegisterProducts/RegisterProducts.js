@@ -21,7 +21,6 @@ const RegisterProducts = ({ navigation, route }) => {
     const [productoCategoria, setProductoCategoria] = useState(null);
     const [productoEstado, setProductoEstado] = useState(null);
     const [productoDestino, setProductoDestino] = useState(null);
-    const [productoPropietario, setProductoPropietario] = useState(null);
     const [opcionesCategoria, setOpcionesCategoria] = useState([]);
     const [opcionesProductoEstado, setOpcionesProductoEstado] = useState([]);
     const [estaEditando, setEstaEditando] = useState(false);
@@ -47,7 +46,7 @@ const RegisterProducts = ({ navigation, route }) => {
     );
 
     const cargarProductoOpcionesCategoria = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `categoria/categorias_secundarias`);
 
             if (response.Success) {
@@ -58,12 +57,13 @@ const RegisterProducts = ({ navigation, route }) => {
                 Alert.alert("ERROR ❌", "No se pudo cargar las opciones de categoria.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cargarOpcionesEstadoProducto = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `estado_producto`);
 
             if (response.Success) {
@@ -74,6 +74,7 @@ const RegisterProducts = ({ navigation, route }) => {
                 Alert.alert("ERROR ❌", "No se pudo cargar las opciones de estado del producto.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
@@ -84,7 +85,7 @@ const RegisterProducts = ({ navigation, route }) => {
                 const imagenUri = response.assets[0].uri;
                 try {
                     const base64Imagen = await RNFS.readFile(imagenUri, 'base64');
-                    setProductoImagen(base64Imagen); 
+                    setProductoImagen(base64Imagen);
                 } catch (error) {
                     Alert.alert("ERROR ❌", "No se pudo guardar la imagen.")
                 }
@@ -93,7 +94,7 @@ const RegisterProducts = ({ navigation, route }) => {
     };
 
     const crearProducto = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const usuarioId = await AsyncStorage.getItem('usuarioId');
 
             if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null) {
@@ -114,13 +115,23 @@ const RegisterProducts = ({ navigation, route }) => {
                         "id": productoEstado
                     }
                 }
+
+                const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `producto`, data);
+
+                if (response.Success) {
+                    Alert.alert("EXITO ✅", "El producto ha sido creado.");
+                    navigation.replace("Menu");
+                } else {
+                    Alert.alert("ERROR ❌", "El producto no fue creado.");
+                }
             } else {
                 Alert.alert(
-                    "ERROR ❌", 
-                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\nNombre, Precio, Existencias, Destinación del producto, categoria y estado del producto."
+                    "ERROR ❌",
+                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\n- Nombre \n- Precio \n- Existencias \n- Destinación del producto \n- Categoria \n- Estado del producto."
                 );
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
@@ -161,7 +172,7 @@ const RegisterProducts = ({ navigation, route }) => {
                     <Picker.Item label="Intercambio" value="Intercambio" />
                     <Picker.Item label="Subasta" value="Subasta" />
                 </Picker>
-                <CustomButton title="Create" onPress={crearProducto}/>
+                <CustomButton title="Create" onPress={crearProducto} />
             </View>
         </ScrollView>
     )

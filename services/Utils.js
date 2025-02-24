@@ -28,8 +28,8 @@ class Utils {
             const response = await axios.get(url, {headers:{Authorization: `Bearer ${token}`}});
             return response.data;
         } catch (error) {
-            console.log("GET request failed: ", error);
-
+            const data = { Data: [], Message: 'No se pudo enviar la petición.', Status: 500, Success: false }
+            return data;
         }
     }
 
@@ -46,7 +46,8 @@ class Utils {
             });
             return response.data;
         } catch (error) {
-            console.log("POST request failed:", error.message);
+            const data = { Data: [], Message: 'No se pudo enviar la petición.', Status: 500, Success: false }
+            return data;
         }
     }
 
@@ -63,7 +64,8 @@ class Utils {
             });
             return response.data;
         } catch (error) {
-            console.log("PUT request failed: ", error.message);
+            const data = { Data: [], Message: 'No se pudo enviar la petición.', Status: 500, Success: false }
+            return data;
         }
     }
 
@@ -75,8 +77,8 @@ class Utils {
             const response = await axios.delete(url,{headers:{Authorization: `Bearer ${token}`}});
             return response.data;
         } catch (error) {
-            console.log("DELETE request failed: ", error.message);
-
+            const data = { Data: [], Message: 'No se pudo enviar la petición.', Status: 500, Success: false }
+            return data;
         }
     }
 }

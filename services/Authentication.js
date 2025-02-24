@@ -9,7 +9,7 @@ class Authentication {
         try {
             if (token != null) {
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/verificar_autenticacion`);
-                if (response.Data.valido) {
+                if (response.Success && response.Data.valido) {
                     return true;
                 } else {
                     await AsyncStorage.removeItem('autenticacionToken');

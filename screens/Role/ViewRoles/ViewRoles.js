@@ -16,7 +16,7 @@ const ViewRoles = ({ navigation }) => {
     }, []);
 
     const cargarRoles = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`);
 
             if (response.Success) {
@@ -25,6 +25,7 @@ const ViewRoles = ({ navigation }) => {
                 Alert.alert("ERROR ❌", "No se puede cargar los roles.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
@@ -33,7 +34,7 @@ const ViewRoles = ({ navigation }) => {
         navigation.navigate("RegisterRole", { ID });
     }
     const cambiarEstado = async (ID) => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
 
             if (response.Success) {
@@ -93,6 +94,7 @@ const ViewRoles = ({ navigation }) => {
                 }
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }

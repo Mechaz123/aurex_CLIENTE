@@ -27,7 +27,7 @@ const RegisterRole = ({ navigation, route }) => {
     );
 
     const cargarDataRol = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             if (ID != undefined) {
                 setEstaEditando(true);
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
@@ -42,11 +42,12 @@ const RegisterRole = ({ navigation, route }) => {
                 setEstaEditando(false);
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
     const crearRol = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const data = {
                 "nombre": rolNombre,
                 "descripcion": rolDescripcion,
@@ -65,12 +66,13 @@ const RegisterRole = ({ navigation, route }) => {
                 Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const editarRol = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const data = {
                 "nombre": rolNombre,
                 "descripcion": rolDescripcion,
@@ -87,6 +89,7 @@ const RegisterRole = ({ navigation, route }) => {
                 }
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }

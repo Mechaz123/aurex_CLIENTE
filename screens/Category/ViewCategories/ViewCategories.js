@@ -16,7 +16,7 @@ const ViewCategories = ({ navigation }) => {
     }, []);
 
     const cargarCategorias = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`);
 
             if (response.Success) {
@@ -25,6 +25,7 @@ const ViewCategories = ({ navigation }) => {
                 Alert.alert("ERROR ❌", "No se pudo cargar las categorias.")
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
@@ -34,7 +35,7 @@ const ViewCategories = ({ navigation }) => {
     }
 
     const cambiarEstado = async (ID) => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
 
             if (response.Success) {
@@ -94,6 +95,7 @@ const ViewCategories = ({ navigation }) => {
                 }
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }

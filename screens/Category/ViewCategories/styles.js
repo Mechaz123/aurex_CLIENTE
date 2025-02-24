@@ -24,6 +24,7 @@ export default StyleSheet.create({
     container_table: {
         marginLeft: 20,
         marginRight: 20,
+        marginBottom: 20,
         alignItems: 'flex-start',
         backgroundColor: colors.background,
         flex: 1,

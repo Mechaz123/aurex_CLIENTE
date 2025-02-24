@@ -38,7 +38,7 @@ const RolePermission = ({ navigation }) => {
     );
 
     const cargarOpcionesRol = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`);
 
             if (response.Success) {
@@ -51,12 +51,13 @@ const RolePermission = ({ navigation }) => {
                 Alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cargarRolePermiso = async (itemValue) => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             setMostrarSwitch(false);
             setMostrarSelector(false);
             if (itemValue != null) {
@@ -78,12 +79,13 @@ const RolePermission = ({ navigation }) => {
                 }
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cargarOpcionesPermiso = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `permiso/activos`);
 
             if (response.Success) {
@@ -96,12 +98,13 @@ const RolePermission = ({ navigation }) => {
                 Alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cambiarEstado = async (ID) => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`);
 
             if (response.Success) {
@@ -161,12 +164,13 @@ const RolePermission = ({ navigation }) => {
                 }
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const crearRolPermiso = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             if (permisoSeleccionado != null) {
                 const verificarRolPermisoCreados = rolPermiso.filter((data) => (data.rol.id == rolSeleccionado) && (data.permiso.id == permisoSeleccionado)).length;
                 if (verificarRolPermisoCreados == 0) {
@@ -194,6 +198,7 @@ const RolePermission = ({ navigation }) => {
                 Alert.alert("ERROR ❌", "Por favor seleccione un permiso para el rol.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }

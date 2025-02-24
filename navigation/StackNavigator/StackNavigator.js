@@ -7,11 +7,11 @@ import DrawerNavigator from "../DrawerNavigator/DrawerNavigator";
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
-    return(
+    return (
         <Stack.Navigator>
-            <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false }}/>
-            <Stack.Screen name="NFCAuthentication" component={NFCAuthentication} options={{headerShown: false}}/>
-            <Stack.Screen name="Menu" component={DrawerNavigator} options={{headerShown: false}} />
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="NFCAuthentication" component={NFCAuthentication} options={{ headerShown: false }} />
+            <Stack.Screen name="Menu" component={DrawerNavigator} options={{ headerShown: false }} />
         </Stack.Navigator>
     );
 }

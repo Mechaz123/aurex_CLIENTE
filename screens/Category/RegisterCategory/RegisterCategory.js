@@ -35,7 +35,7 @@ const RegisterCategory = ({ navigation, route }) => {
     );
 
     const cargarDataCategoria = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             if (ID != undefined) {
                 setEstaEditando(true);
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
@@ -55,12 +55,13 @@ const RegisterCategory = ({ navigation, route }) => {
                 setEstaEditando(false);
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cargarOpcionesCategoria = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `categoria/categorias_principales`);
 
             if (response.Success) {
@@ -71,12 +72,13 @@ const RegisterCategory = ({ navigation, route }) => {
                 Alert("ERROR", "No se pudo cargar las opciones.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const crearCategoria = async () => {
-        if (Authentication.verificarTokenGuardado()) {
+        if (await Authentication.verificarTokenGuardado()) {
             let data = {
                 "nombre": categoriaNombre,
                 "descripcion": categoriaDescripcion,
@@ -112,6 +114,7 @@ const RegisterCategory = ({ navigation, route }) => {
                 Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
@@ -154,6 +157,7 @@ const RegisterCategory = ({ navigation, route }) => {
             }
 
         } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }

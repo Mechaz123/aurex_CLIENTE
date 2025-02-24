@@ -13,6 +13,7 @@ import RegisterRole from "../../screens/Role/RegisterRole/RegisterRole";
 import ViewRoles from "../../screens/Role/ViewRoles/ViewRoles";
 import RolePermission from "../../screens/RolePermission/RolePermission";
 import RegisterProducts from "../../screens/Products/RegisterProducts/RegisterProducts";
+import Authentication from "../../services/Authentication";
 
 const Drawer = createDrawerNavigator();
 
@@ -24,9 +25,14 @@ const DrawerNavigator = () => {
     }, []);
 
     const getMenuOpciones = async () => {
-        const ID = await AsyncStorage.getItem('usuarioId');
-        const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/${ID}/menu_opciones`);
-        setOpciones(response.Data);
+        if (await Authentication.verificarTokenGuardado()) {
+            const ID = await AsyncStorage.getItem('usuarioId');
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/${ID}/menu_opciones`);
+            setOpciones(response.Data);
+        } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
+        }
     }
 
     const Salir = async (navigation) => {
@@ -62,9 +68,9 @@ const DrawerNavigator = () => {
             {opciones.includes("RegisterProducts") && (
                 <Drawer.Screen name="RegisterProducts" component={RegisterProducts} options={screenOptions.RegisterProducts} />
             )}
-            <Drawer.Screen name="Logout" component={() => null} options={screenOptions.Logout} listeners={({navigation}) => ({
-                focus: () => Salir(navigation),      
-            })}/>
+            <Drawer.Screen name="Logout" component={() => null} options={screenOptions.Logout} listeners={({ navigation }) => ({
+                focus: () => Salir(navigation),
+            })} />
         </Drawer.Navigator>
     )
 }
