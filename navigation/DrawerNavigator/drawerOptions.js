@@ -29,7 +29,15 @@ export const screenOptions = {
     },
     Sell: {
         title: "AUREX",
-        drawerLabel: "💰 Vender"
+        drawerLabel: "💰 Productos en Venta"
+    },
+    ExchangeProducts: {
+        title: "AUREX",
+        drawerLabel: "↔️ Productos para intercambio" 
+    },
+    AuctionProducts: {
+        title: "AUREX",
+        drawerLabel: "💲Productos para subastar" 
     },
     RegisterCategory: {
         title: "AUREX",

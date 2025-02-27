@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
+import Authentication from "../../../services/Authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Utils from "../../../services/Utils";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
-import CustomCard from '../../../components/CustomCard/CustomCard';
-import Authentication from '../../../services/Authentication';
-import Utils from '../../../services/Utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import styles from "./styles";
+import CustomCard from "../../../components/CustomCard/CustomCard";
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
-import styles from './styles';
 
-const SellProducts = ({ navigation }) => {
+const AuctionProducts = ({ navigation }) => {
     const [productosPropietario, setProductosPropietario] = useState([]);
 
     useFocusEffect(
@@ -23,7 +23,7 @@ const SellProducts = ({ navigation }) => {
     const cargarProductosPropietario = async () => {
         if (await Authentication.verificarTokenGuardado()) {
             const usuarioId = await AsyncStorage.getItem('usuarioId');
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `producto/venta/propietario/${usuarioId}`);
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `producto/subasta/propietario/${usuarioId}`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
@@ -44,7 +44,7 @@ const SellProducts = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>💰 Productos en Venta</Text>
+            <Text style={styles.title}>💲Productos para subastar</Text>
             <Text style={styles.text}>Seleccione un producto si desea cambiar su información.</Text>
             <FlatList data={productosPropietario} keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
@@ -54,7 +54,7 @@ const SellProducts = ({ navigation }) => {
                 )}
             />
         </View>
-    );
+    )
 }
 
-export default SellProducts;
+export default AuctionProducts;

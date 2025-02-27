@@ -14,6 +14,8 @@ import ViewRoles from "../../screens/Role/ViewRoles/ViewRoles";
 import RolePermission from "../../screens/RolePermission/RolePermission";
 import RegisterProducts from "../../screens/Products/RegisterProducts/RegisterProducts";
 import Authentication from "../../services/Authentication";
+import ExchangeProducts from "../../screens/Products/ExchangeProducts/ExchangeProducts";
+import AuctionProducts from "../../screens/Products/AuctionProducts/AuctionProducts";
 
 const Drawer = createDrawerNavigator();
 
@@ -49,6 +51,12 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("Sell") && (
                 <Drawer.Screen name="Sell" component={SellProducts} options={screenOptions.Sell} />
+            )}
+            {opciones.includes("ExchangeProducts") && (
+                <Drawer.Screen name="ExchangeProducts" component={ExchangeProducts} options={screenOptions.ExchangeProducts} />
+            )}
+            {opciones.includes("AuctionProducts") && (
+                <Drawer.Screen name="AuctionProducts" component={AuctionProducts} options={screenOptions.AuctionProducts} />
             )}
             {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />

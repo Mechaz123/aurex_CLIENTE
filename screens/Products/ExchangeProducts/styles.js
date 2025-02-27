@@ -11,7 +11,7 @@ export default StyleSheet.create({
     },
     title: {
         color: colors.text_basic,
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
     },

@@ -13,6 +13,7 @@ import RNFS from 'react-native-fs';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RegisterProducts = ({ navigation, route }) => {
+    let { ID } = route.params ?? {};
     const [productoNombre, setProductoNombre] = useState(null);
     const [productoDescripcion, setProductoDescripcion] = useState(null);
     const [productoPrecio, setProductoPrecio] = useState(null);
@@ -27,6 +28,7 @@ const RegisterProducts = ({ navigation, route }) => {
 
     useFocusEffect(
         useCallback(() => {
+            cargarDataProducto();
             cargarProductoOpcionesCategoria();
             cargarOpcionesEstadoProducto();
             return (() => {
@@ -41,9 +43,40 @@ const RegisterProducts = ({ navigation, route }) => {
                 setOpcionesCategoria([]);
                 setOpcionesProductoEstado([]);
                 setEstaEditando(false);
+                ID = undefined;
             })
-        }, [])
+        }, [route.params])
     );
+
+    const cargarDataProducto = async () => {
+        if (await Authentication.verificarTokenGuardado()) {
+            if (ID != undefined) {
+                setEstaEditando(true);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `producto/${ID}`);
+                
+                if (response.Success) {
+                    setProductoNombre(response.Data.nombre);
+                    setProductoDescripcion(response.Data.descripcion);
+                    setProductoPrecio(response.Data.precio);
+                    setProductoExistencias(String(response.Data.existencias));
+                    setProductoCategoria(response.Data.categoria.id);
+                    setProductoEstado(response.Data.estado_producto.id);
+                    setProductoDestino(response.Data.destino);
+
+                    if (response.Data.imagen_url != null) {
+                        setProductoImagen(String(response.Data.imagen_url));
+                    }
+                } else {
+                    Alert.alert("ERROR ❌", "No se pudo cargar la data.");
+                }
+            } else {
+                setEstaEditando(false);
+            }
+        } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
+        }
+    }
 
     const cargarProductoOpcionesCategoria = async () => {
         if (await Authentication.verificarTokenGuardado()) {
@@ -136,6 +169,45 @@ const RegisterProducts = ({ navigation, route }) => {
         }
     }
 
+    const editarProducto = async () => {
+        if (await Authentication.verificarTokenGuardado()) {
+
+            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null) {
+                const data = {
+                    "nombre": productoNombre,
+                    "descripcion": productoDescripcion,
+                    "precio": productoPrecio,
+                    "existencias": productoExistencias,
+                    "imagen_url": productoImagen,
+                    "destino": productoDestino,
+                    "categoria": {
+                        "id": productoCategoria
+                    },
+                    "estado_producto": {
+                        "id": productoEstado
+                    }
+                }
+
+                const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `producto/${ID}`, data);
+
+                if (response.Success) {
+                    Alert.alert("EXITO ✅", "El producto ha sido editado.");
+                    navigation.replace("Menu");
+                } else {
+                    Alert.alert("ERROR ❌", "El producto no fue editado.");
+                }
+            } else {
+                Alert.alert(
+                    "ERROR ❌",
+                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\n- Nombre \n- Precio \n- Existencias \n- Destinación del producto \n- Categoria \n- Estado del producto."
+                );
+            }
+        } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
+        }
+    }
+
     return (
         <ScrollView style={styles.ScrollView}>
             <View style={styles.container}>
@@ -172,7 +244,7 @@ const RegisterProducts = ({ navigation, route }) => {
                     <Picker.Item label="Intercambio" value="Intercambio" />
                     <Picker.Item label="Subasta" value="Subasta" />
                 </Picker>
-                <CustomButton title="Create" onPress={crearProducto} />
+                <CustomButton title={estaEditando ? "Editar" : "Crear"} onPress={estaEditando ? editarProducto : crearProducto} />
             </View>
         </ScrollView>
     )
