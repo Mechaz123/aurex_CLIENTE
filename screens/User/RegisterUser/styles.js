@@ -11,7 +11,6 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         padding: 20,
-        paddingBottom: 200,
     },
     title: {
         color: colors.text_basic,
@@ -26,22 +25,9 @@ export default StyleSheet.create({
         borderWidth: 1,
         height: 40,
         marginBottom: 15,
-        marginTop: 10,
+        marginTop: 20,
         paddingHorizontal: 10,
         width: '100%',
-    },
-    textArea: {
-        backgroundColor: colors.white,
-        borderColor: colors.border,
-        borderRadius: 5,
-        borderWidth: 1,
-        height: 40,
-        marginBottom: 15,
-        marginTop: 10,
-        paddingHorizontal: 10,
-        textAlignVertical: 'top',
-        width: '100%',
-        height: '20%',
     },
     imageContainer: {
         alignItems: 'center',
@@ -64,18 +50,18 @@ export default StyleSheet.create({
         height: 200,
         resizeMode: 'contain',
     },
-    firsttextSelect: {
+    firstTextSelect: {
         color: colors.text_basic,
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 15,
-        marginTop: 15,
     },
     textSelect: {
         color: colors.text_basic,
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 15,
+        marginTop: 15,
     },
     picker: {
         width: '80%',

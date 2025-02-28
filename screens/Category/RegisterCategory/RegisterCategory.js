@@ -69,7 +69,7 @@ const RegisterCategory = ({ navigation, route }) => {
                     setOpcionesCategoria(response.Data);
                 }
             } else {
-                Alert("ERROR", "No se pudo cargar las opciones.");
+                Alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");

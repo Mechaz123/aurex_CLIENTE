@@ -120,7 +120,7 @@ const RegisterProducts = ({ navigation, route }) => {
                     const base64Imagen = await RNFS.readFile(imagenUri, 'base64');
                     setProductoImagen(base64Imagen);
                 } catch (error) {
-                    Alert.alert("ERROR ❌", "No se pudo guardar la imagen.")
+                    Alert.alert("ERROR ❌", "No se pudo guardar la imagen.");
                 }
             }
         });
