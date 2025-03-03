@@ -1,14 +1,14 @@
-import { useFocusEffect } from "@react-navigation/native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native"
+import styles from "./styles"
 import { useCallback, useState } from "react";
-import Authentication from "../../../services/Authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
-import styles from "./styles";
-import CustomCard from "../../../components/CustomCard/CustomCard";
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
+import { useFocusEffect } from "@react-navigation/native";
+import CustomCard from "../../../components/CustomCard/CustomCard";
 
-const AuctionProducts = ({ navigation }) => {
+const DonationProducts = ({ navigation }) => {
     const [productosPropietario, setProductosPropietario] = useState([]);
 
     useFocusEffect(
@@ -23,7 +23,7 @@ const AuctionProducts = ({ navigation }) => {
     const cargarProductosPropietario = async () => {
         if (await Authentication.verificarTokenGuardado()) {
             const usuarioId = await AsyncStorage.getItem('usuarioId');
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `producto/subasta/propietario/${usuarioId}`);
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `producto/donacion/propietario/${usuarioId}`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
@@ -44,7 +44,7 @@ const AuctionProducts = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>💲Productos para subastar</Text>
+            <Text style={styles.title}>🤍 Productos para donar</Text>
             <Text style={styles.text}>Seleccione un producto si desea cambiar su información.</Text>
             <FlatList data={productosPropietario} keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
@@ -57,4 +57,4 @@ const AuctionProducts = ({ navigation }) => {
     )
 }
 
-export default AuctionProducts;
+export default DonationProducts;

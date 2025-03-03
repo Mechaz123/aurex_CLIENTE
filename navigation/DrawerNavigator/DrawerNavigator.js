@@ -17,6 +17,7 @@ import Authentication from "../../services/Authentication";
 import ExchangeProducts from "../../screens/Products/ExchangeProducts/ExchangeProducts";
 import AuctionProducts from "../../screens/Products/AuctionProducts/AuctionProducts";
 import RegisterUser from "../../screens/User/RegisterUser/RegisterUser";
+import DonationProducts from "../../screens/Products/DonationProducts/DonationProducts";
 
 const Drawer = createDrawerNavigator();
 
@@ -58,6 +59,9 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("AuctionProducts") && (
                 <Drawer.Screen name="AuctionProducts" component={AuctionProducts} options={screenOptions.AuctionProducts} />
+            )}
+            {opciones.includes("DonationProducts") && (
+                <Drawer.Screen name="DonationProducts" component={DonationProducts} options={screenOptions.DonationProducts} />
             )}
             {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />

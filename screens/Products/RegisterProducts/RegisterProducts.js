@@ -23,14 +23,15 @@ const RegisterProducts = ({ navigation, route }) => {
     const [productoEstado, setProductoEstado] = useState(null);
     const [productoDestino, setProductoDestino] = useState(null);
     const [opcionesCategoria, setOpcionesCategoria] = useState([]);
+    const [opcionesCategoriaDisponibles, setOpcionesCategoriaDisponibles] = useState([]);
     const [opcionesProductoEstado, setOpcionesProductoEstado] = useState([]);
     const [estaEditando, setEstaEditando] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
-            cargarDataProducto();
             cargarProductoOpcionesCategoria();
             cargarOpcionesEstadoProducto();
+            cargarDataProducto();
             return (() => {
                 setProductoNombre(null);
                 setProductoDescripcion(null);
@@ -41,6 +42,7 @@ const RegisterProducts = ({ navigation, route }) => {
                 setProductoEstado(null);
                 setProductoDestino(null);
                 setOpcionesCategoria([]);
+                setOpcionesCategoriaDisponibles([]);
                 setOpcionesProductoEstado([]);
                 setEstaEditando(false);
                 ID = undefined;
@@ -53,7 +55,7 @@ const RegisterProducts = ({ navigation, route }) => {
             if (ID != undefined) {
                 setEstaEditando(true);
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `producto/${ID}`);
-                
+
                 if (response.Success) {
                     setProductoNombre(response.Data.nombre);
                     setProductoDescripcion(response.Data.descripcion);
@@ -84,7 +86,13 @@ const RegisterProducts = ({ navigation, route }) => {
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
+                    const categorias = response.Data;
                     setOpcionesCategoria(response.Data);
+                    const categorias_filtradas = categorias.filter(
+                        categoria => !categoria.nombre.includes("Donación")
+                    )
+                    setOpcionesCategoriaDisponibles(categorias_filtradas);
+
                 }
             } else {
                 Alert.alert("ERROR ❌", "No se pudo cargar las opciones de categoria.");
@@ -126,11 +134,24 @@ const RegisterProducts = ({ navigation, route }) => {
         });
     };
 
+    const filtrarDestinoCategoria = async (itemValue) => {
+        setProductoDestino(itemValue);
+
+        if (itemValue == "Donación") {
+            const CategoriaDonacion = await opcionesCategoria.find(
+                categoria => categoria.nombre.includes("Donación")
+            )
+            setProductoCategoria(CategoriaDonacion.id);
+        } else {
+            setProductoCategoria(null);
+        }
+    }
+
     const crearProducto = async () => {
         if (await Authentication.verificarTokenGuardado()) {
             const usuarioId = await AsyncStorage.getItem('usuarioId');
-
-            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null) {
+            
+            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null && productoImagen != null) {
                 const data = {
                     "nombre": productoNombre,
                     "descripcion": productoDescripcion,
@@ -160,7 +181,7 @@ const RegisterProducts = ({ navigation, route }) => {
             } else {
                 Alert.alert(
                     "ERROR ❌",
-                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\n- Nombre \n- Precio \n- Existencias \n- Destinación del producto \n- Categoria \n- Estado del producto."
+                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\n- Nombre \n- Precio \n- Existencias \n- Imagen del producto \n- Destinación del producto \n- Categoria \n- Estado del producto"
                 );
             }
         } else {
@@ -172,7 +193,7 @@ const RegisterProducts = ({ navigation, route }) => {
     const editarProducto = async () => {
         if (await Authentication.verificarTokenGuardado()) {
 
-            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null) {
+            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null && productoImagen != null) {
                 const data = {
                     "nombre": productoNombre,
                     "descripcion": productoDescripcion,
@@ -199,7 +220,7 @@ const RegisterProducts = ({ navigation, route }) => {
             } else {
                 Alert.alert(
                     "ERROR ❌",
-                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\n- Nombre \n- Precio \n- Existencias \n- Destinación del producto \n- Categoria \n- Estado del producto."
+                    "Complete el formulario, los siguientes campos son requeridos para crear el producto:\n\n- Nombre \n- Precio \n- Existencias \n- Imagen del producto \n- Destinación del producto \n- Categoria \n- Estado del producto."
                 );
             }
         } else {
@@ -223,26 +244,29 @@ const RegisterProducts = ({ navigation, route }) => {
                         <Image source={{ uri: `data:image/png;base64,${productoImagen}` }} style={styles.image} />
                     </View>
                 )}
-                <Text style={styles.firsttextSelect}>Seleccione la categoria del producto</Text>
-                <Picker style={styles.picker} selectedValue={productoCategoria} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoCategoria(itemValue)}>
-                    <Picker.Item label="Ninguno" value={null} />
-                    {opcionesCategoria.map((option, index) => (
-                        <Picker.Item key={index} label={option.nombre} value={option.id} />
-                    ))}
-                </Picker>
-                <Text style={styles.textSelect}>Seleccione el estado del producto</Text>
-                <Picker style={styles.picker} selectedValue={productoEstado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoEstado(itemValue)}>
-                    <Picker.Item label="Ninguno" value={null} />
-                    {opcionesProductoEstado.map((option, index) => (
-                        <Picker.Item key={index} label={option.nombre} value={option.id} />
-                    ))}
-                </Picker>
-                <Text style={styles.textSelect}>Seleccione el destino del producto</Text>
-                <Picker style={styles.picker} selectedValue={productoDestino} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoDestino(itemValue)}>
+                <Text style={styles.firsttextSelect}>Seleccione el destino del producto</Text>
+                <Picker style={styles.picker} selectedValue={productoDestino} dropdownIconColor={colors.primary} onValueChange={(itemValue) => filtrarDestinoCategoria(itemValue)}>
                     <Picker.Item label="Ninguno" value={null} />
                     <Picker.Item label="Venta" value="Venta" />
                     <Picker.Item label="Intercambio" value="Intercambio" />
                     <Picker.Item label="Subasta" value="Subasta" />
+                    <Picker.Item label="Donación" value="Donación" />
+                </Picker>
+                {productoDestino != "Donación" && (
+                    <>
+                        <Text style={styles.textSelect}>Seleccione la categoria del producto</Text><Picker style={styles.picker} selectedValue={productoCategoria} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoCategoria(itemValue)}>
+                            <Picker.Item label="Ninguno" value={null} />
+                            {opcionesCategoriaDisponibles.map((option, index) => (
+                                <Picker.Item key={index} label={option.nombre} value={option.id} />
+                            ))}
+                        </Picker>
+                    </>
+                )}
+                <Text style={styles.textSelect}>Seleccione el estado del producto</Text><Picker style={styles.picker} selectedValue={productoEstado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoEstado(itemValue)}>
+                    <Picker.Item label="Ninguno" value={null} />
+                    {opcionesProductoEstado.map((option, index) => (
+                        <Picker.Item key={index} label={option.nombre} value={option.id} />
+                    ))}
                 </Picker>
                 <CustomButton title={estaEditando ? "Editar" : "Crear"} onPress={estaEditando ? editarProducto : crearProducto} />
             </View>

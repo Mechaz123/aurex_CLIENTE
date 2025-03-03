@@ -39,6 +39,10 @@ export const screenOptions = {
         title: "AUREX",
         drawerLabel: "💲Productos para subastar" 
     },
+    DonationProducts: {
+        title: "AUREX",
+        drawerLabel: "🤍Productos para donación" 
+    },
     RegisterCategory: {
         title: "AUREX",
         drawerLabel: "✏️ Registrar Categoria"
