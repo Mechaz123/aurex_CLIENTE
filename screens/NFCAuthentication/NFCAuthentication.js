@@ -8,23 +8,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NFCAuthentication = ({ navigation, route }) => {
     const { nombreUsuario } = route.params;
-    const { tag, error, scanNFC } = useNFCScanner(10000);
+    let { scanNFC } = useNFCScanner();
 
     useEffect(() => {
-        scanNFC();
-    }, [scanNFC]);
+        leerTarjeta();
+    }, [route.params]);
 
-    useEffect(() => {
-        if (error != null) {
-            Alert.alert('ERROR ❌', error);
+    const leerTarjeta = async () => {
+        const { tagCard, errorCard } = await scanNFC(15000);
+
+        if (errorCard != null) {
+            Alert.alert('ERROR ❌', errorCard);
             navigation.replace('Login');
-        } else if (tag != null) {
-            enviarAutenticacion();
+        } else if (tagCard != null) {
+            await enviarAutenticacion(tagCard);
         }
-    }, [error, tag, navigation]);
-
-    const enviarAutenticacion = async () => {
-        let jsonData = utils.ConvertNfcToJson(tag);
+    }
+    const enviarAutenticacion = async (tag) => {
+        let jsonData = await utils.ConvertNfcToJson(tag);
         jsonData.nombre_usuario = nombreUsuario;
         const usuarioData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/autenticacion`, jsonData);
 

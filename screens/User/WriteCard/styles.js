@@ -24,17 +24,4 @@ export default StyleSheet.create({
         marginBottom: 80,
         textAlign: 'center',
     },
-    button: {
-        alignItems: 'center',
-        backgroundColor: colors.background,
-        borderRadius: 5,
-        height: 40,
-        justifyContent: 'center',
-        width: '100%',
-    },
-    text_button: {
-        color: colors.primary,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
 })

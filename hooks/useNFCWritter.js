@@ -13,6 +13,8 @@ const useNFCWritter = () => {
     }, []);
 
     const writeNFC = async (customData, writeTimeout) => {
+        let errorCard = null;
+
         try {
             timeout = setTimeout(() => {
                 nfcManager.cancelTechnologyRequest();
@@ -23,17 +25,18 @@ const useNFCWritter = () => {
             const ndefData = Ndef.encodeMessage([Ndef.record(Ndef.TNF_MIME_MEDIA, "application/json", [], jsonString)]);
             await nfcManager.ndefHandler.writeNdefMessage(ndefData);
 
-
             clearTimeout(timeout);
         } catch (error) {
-            setError('Su tarjeta no pudo ser configurada, por favor intente de nuevo.');
+            errorCard = "Su tarjeta no pudo ser configurada, por favor intente de nuevo.";
         } finally {
             nfcManager.cancelTechnologyRequest();
             clearTimeout(timeout);
         }
+
+        return errorCard;
     }
 
-    return { error, writeNFC };
+    return { writeNFC };
 };
 
 export default useNFCWritter;

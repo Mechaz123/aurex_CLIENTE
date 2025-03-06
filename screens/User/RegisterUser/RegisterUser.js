@@ -73,7 +73,31 @@ const RegisterUser = ({ navigation }) => {
 
     const crearUsuario = async () => {
         if (await Authentication.verificarTokenGuardado()) {
-            navigation.replace("WriteCard");
+            
+            if(usuarioNombreUsuario != null && usuarioCorreo != null && usuarioNombre != null && usuarioApellido != null && usuarioDireccion != null && usuarioNumeroContacto != null && usuarioPais != null) {
+                const data = {
+                    "nombre_usuario": usuarioNombreUsuario,
+                    "correo": usuarioCorreo,
+                    "clave": usuarioNombreUsuario,
+                    "nombre": usuarioNombre,
+                    "apellido": usuarioApellido,
+                    "direccion": usuarioDireccion,
+                    "numero_contacto": usuarioNumeroContacto,
+                    "pais": usuarioPais,
+                    "imagen_url": usuarioImagen,
+                    "estado_usuario": {
+                        "id": usuarioEstado
+                    }
+                }
+                const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario`, data);
+
+                if (response.Success) {
+                    const ID = response.Data.id;
+                    navigation.replace("WriteCard", { ID });
+                } else {
+                    Alert.alert("ERROR ❌", "El usuario no fue creado.");
+                }
+            }
         } else {
             navigation.replace("Login"); 
         }
@@ -90,9 +114,9 @@ const RegisterUser = ({ navigation }) => {
                 <TextInput style={styles.textInput} placeholder="Dirección" placeholderTextColor={colors.menu_inactive_option} value={usuarioDireccion} onChangeText={setUsuarioDireccion} />
                 <TextInput keyboardType="phone-pad" style={styles.textInput} placeholder="Número de contacto" placeholderTextColor={colors.menu_inactive_option} value={usuarioNumeroContacto} onChangeText={setUsuarioNumeroContacto} />
                 <Text style={styles.firstTextSelect}>Seleccione el país de residencia</Text>
-                <Picker style={styles.picker} selectedValue={usuarioEstado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setUsuarioEstado(itemValue)}>
+                <Picker style={styles.picker} selectedValue={usuarioPais} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setUsuarioPais(itemValue)}>
                     <Picker.Item label="Ninguno" value={null} />
-                    <Picker.Item label="🇨🇴 Colombia" />
+                    <Picker.Item label="🇨🇴 Colombia" value="Colombia" />
                 </Picker>
                 <CustomButton title="📷 Seleccione la imagen" onPress={seleccionarImagen} />
                 {usuarioImagen && (
