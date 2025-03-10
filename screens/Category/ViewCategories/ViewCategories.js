@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
+import { useFocusEffect } from "@react-navigation/native";
 
 const ViewCategories = ({ navigation }) => {
     const [categorias, setCategorias] = useState([]);
 
-    useEffect(() => {
-        cargarCategorias();
-        return (() => {
-            setCategorias([]);
-        })
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            cargarCategorias();
+            return (() => {
+                setCategorias([]);
+            })
+        }, [])
+    );
 
     const cargarCategorias = async () => {
         if (await Authentication.verificarTokenGuardado()) {

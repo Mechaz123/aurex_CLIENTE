@@ -151,7 +151,7 @@ const RegisterProducts = ({ navigation, route }) => {
         if (await Authentication.verificarTokenGuardado()) {
             const usuarioId = await AsyncStorage.getItem('usuarioId');
             
-            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null && productoImagen != null) {
+            if (productoNombre && productoPrecio && productoExistencias && productoDestino && productoCategoria && productoEstado && productoImagen) {
                 const data = {
                     "nombre": productoNombre,
                     "descripcion": productoDescripcion,
@@ -193,7 +193,7 @@ const RegisterProducts = ({ navigation, route }) => {
     const editarProducto = async () => {
         if (await Authentication.verificarTokenGuardado()) {
 
-            if (productoNombre != null && productoPrecio != null && productoExistencias != null && productoDestino != null && productoCategoria != null && productoEstado != null && productoImagen != null) {
+            if (productoNombre && productoPrecio && productoExistencias && productoDestino && productoCategoria && productoEstado && productoImagen) {
                 const data = {
                     "nombre": productoNombre,
                     "descripcion": productoDescripcion,

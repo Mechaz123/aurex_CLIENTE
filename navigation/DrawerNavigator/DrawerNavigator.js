@@ -18,6 +18,7 @@ import ExchangeProducts from "../../screens/Products/ExchangeProducts/ExchangePr
 import AuctionProducts from "../../screens/Products/AuctionProducts/AuctionProducts";
 import RegisterUser from "../../screens/User/RegisterUser/RegisterUser";
 import DonationProducts from "../../screens/Products/DonationProducts/DonationProducts";
+import UserManagement from "../../screens/User/UserManagement/UserManagement";
 
 const Drawer = createDrawerNavigator();
 
@@ -83,6 +84,9 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("RegisterUsers") && (
                 <Drawer.Screen name="RegisterUsers" component={RegisterUser} options={screenOptions.RegisterUser} />
+            )}
+            {opciones.includes("UserManagement") && (
+                <Drawer.Screen name="UserManagement" component={UserManagement} options={screenOptions.UserManagement} />
             )}
             <Drawer.Screen name="Logout" component={() => null} options={screenOptions.Logout} listeners={({ navigation }) => ({
                 focus: () => Salir(navigation),

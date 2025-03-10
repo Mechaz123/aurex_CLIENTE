@@ -53,7 +53,7 @@ const RegisterRole = ({ navigation, route }) => {
                 "descripcion": rolDescripcion,
             }
 
-            if (rolNombre != null) {
+            if (rolNombre) {
                 const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`, data);
 
                 if (response.Success) {
@@ -78,7 +78,7 @@ const RegisterRole = ({ navigation, route }) => {
                 "descripcion": rolDescripcion,
             }
 
-            if (data.nombre != null && data.nombre != '') {
+            if (data.nombre) {
                 const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`, data);
 
                 if (response.Success) {

@@ -1,4 +1,4 @@
-import { Image, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, Image, ScrollView, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 import colors from "../../../styles/colors";
 import { useCallback, useState } from "react";
@@ -11,7 +11,8 @@ import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import { useFocusEffect } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 
-const RegisterUser = ({ navigation }) => {
+const RegisterUser = ({ navigation, route }) => {
+    let { ID } = route.params ?? {};
     const [usuarioNombreUsuario, setUsuarioNombreUsuario] = useState(null);
     const [usuarioCorreo, setUsuarioCorreo] = useState(null);
     const [usuarioNombre, setUsuarioNombre] = useState(null);
@@ -22,9 +23,11 @@ const RegisterUser = ({ navigation }) => {
     const [usuarioImagen, setUsuarioImagen] = useState(null);
     const [usuarioEstado, setUsuarioEstado] = useState(null);
     const [opcionesEstadoUsuario, setOpcionesEstadoUsuario] = useState([]);
+    const [estaEditando, setEstaEditando] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
+            cargarDataUsuario();
             cargarOpcionesEstadoUsuario();
             return (() => {
                 setUsuarioNombreUsuario(null);
@@ -36,9 +39,43 @@ const RegisterUser = ({ navigation }) => {
                 setUsuarioPais(null);
                 setUsuarioImagen(null);
                 setOpcionesEstadoUsuario([]);
+                setEstaEditando(false);
+                ID = undefined;
             })
-        }, [])
+        }, [route.params])
     )
+
+    const cargarDataUsuario = async () => {
+        if (await Authentication.verificarTokenGuardado()) {
+            if (ID != undefined) {
+                setEstaEditando(true);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`);
+
+                if (response.Success) {
+                    setUsuarioNombreUsuario(response.Data.nombre_usuario);
+                    setUsuarioCorreo(response.Data.correo);
+                    setUsuarioNombre(response.Data.nombre);
+                    setUsuarioApellido(response.Data.apellido);
+                    setUsuarioDireccion(response.Data.direccion);
+                    setUsuarioDireccion(response.Data.pais);
+                    setUsuarioNumeroContacto(response.Data.numero_contacto);
+                    setUsuarioPais(response.Data.pais);
+                    setUsuarioEstado(response.Data.estado_usuario.id);
+
+                    if (response.Data.imagen_url != null) {
+                        setUsuarioImagen(String(response.Data.imagen_url));
+                    }
+                } else {
+                    Alert.alert("ERROR ❌", "No se pudo cargar la data.");
+                }
+            } else {
+                setEstaEditando(false);
+            }
+        } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
+        }
+    }
 
     const cargarOpcionesEstadoUsuario = async () => {
         if (await Authentication.verificarTokenGuardado()) {
@@ -73,8 +110,8 @@ const RegisterUser = ({ navigation }) => {
 
     const crearUsuario = async () => {
         if (await Authentication.verificarTokenGuardado()) {
-            
-            if(usuarioNombreUsuario != null && usuarioCorreo != null && usuarioNombre != null && usuarioApellido != null && usuarioDireccion != null && usuarioNumeroContacto != null && usuarioPais != null) {
+
+            if (usuarioNombreUsuario && usuarioCorreo && usuarioNombre && usuarioApellido && usuarioDireccion && usuarioNumeroContacto && usuarioPais) {
                 const data = {
                     "nombre_usuario": usuarioNombreUsuario,
                     "correo": usuarioCorreo,
@@ -97,16 +134,58 @@ const RegisterUser = ({ navigation }) => {
                 } else {
                     Alert.alert("ERROR ❌", "El usuario no fue creado.");
                 }
+            } else {
+                Alert.alert(
+                    "ERROR ❌",
+                    "Complete el formulario, los siguientes campos son requeridos para crear al usuario:\n\n- Nombre de usuario \n- Correo \n- Nombre \n- Apellido \n- Dirección \n- Número de contacto \n- País"
+                );
             }
         } else {
-            navigation.replace("Login"); 
+            navigation.replace("Login");
+        }
+    }
+
+    const editarUsuario = async () => {
+        if (await Authentication.verificarTokenGuardado()) {
+
+            if (usuarioNombreUsuario && usuarioCorreo && usuarioNombre && usuarioApellido && usuarioDireccion && usuarioNumeroContacto && usuarioPais) {
+                const data = {
+                    "nombre_usuario": usuarioNombreUsuario,
+                    "correo": usuarioCorreo,
+                    "nombre": usuarioNombre,
+                    "apellido": usuarioApellido,
+                    "direccion": usuarioDireccion,
+                    "numero_contacto": usuarioNumeroContacto,
+                    "pais": usuarioPais,
+                    "imagen_url": usuarioImagen,
+                    "estado_usuario": {
+                        "id": usuarioEstado
+                    }
+                }
+                 const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`, data);
+
+                 if (response.Success) {
+                    Alert.alert("EXITO ✅", "El usuario ha sido editado.");
+                    navigation.replace("Menu");
+                 } else {
+                    Alert.alert("ERROR ❌", "El usuario no fue editado.");
+                 }
+            } else {
+                Alert.alert(
+                    "ERROR ❌",
+                    "Complete el formulario, los siguientes campos son requeridos para crear al usuario:\n\n- Nombre de usuario \n- Correo \n- Nombre \n- Apellido \n- Dirección \n- Número de contacto \n- País"
+                );
+            }
+        } else {
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
         }
     }
 
     return (
         <ScrollView style={styles.ScrollView}>
             <View style={styles.container}>
-                <Text style={styles.title}>👤 Registrar Usuarios</Text>
+                <Text style={styles.title}>{estaEditando ? "✏️ Editar Usuario" : "👤 Registrar Usuarios"}</Text>
                 <TextInput style={styles.textInput} placeholder="Nombre de usuario" placeholderTextColor={colors.menu_inactive_option} value={usuarioNombreUsuario} onChangeText={setUsuarioNombreUsuario} />
                 <TextInput keyboardType="email-address" style={styles.textInput} placeholder="Correo" placeholderTextColor={colors.menu_inactive_option} value={usuarioCorreo} onChangeText={setUsuarioCorreo} />
                 <TextInput style={styles.textInput} placeholder="Nombres" placeholderTextColor={colors.menu_inactive_option} value={usuarioNombre} onChangeText={setUsuarioNombre} />
@@ -132,7 +211,7 @@ const RegisterUser = ({ navigation }) => {
                         <Picker.Item key={index} label={option.nombre} value={option.id} />
                     ))}
                 </Picker>
-                <CustomButton title="Crear" onPress={crearUsuario} />
+                <CustomButton title={estaEditando ? "Editar" : "Crear"} onPress={estaEditando ? editarUsuario : crearUsuario} />
             </View>
         </ScrollView>
     );

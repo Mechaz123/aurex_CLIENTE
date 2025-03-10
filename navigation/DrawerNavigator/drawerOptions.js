@@ -71,7 +71,11 @@ export const screenOptions = {
         title: "AUREX",
         drawerLabel: "👤 Registrar Usuarios"
     },
+    UserManagement: {
+        title: "AUREX",
+        drawerLabel: "🧑🏻‍💻 Gestionar Usuarios"
+    },
     Logout: {
         drawerLabel: "🚪 Salir",
     },
-}
+};

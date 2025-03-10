@@ -60,6 +60,7 @@ const RolePermission = ({ navigation }) => {
         if (await Authentication.verificarTokenGuardado()) {
             setMostrarSwitch(false);
             setMostrarSelector(false);
+            
             if (itemValue != null) {
                 setRolSeleccionado(itemValue);
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `rol/${itemValue}/permisos`);

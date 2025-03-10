@@ -84,9 +84,9 @@ const RegisterCategory = ({ navigation, route }) => {
                 "descripcion": categoriaDescripcion,
             }
 
-            if (categoriaNombre != null) {
+            if (categoriaNombre) {
                 if (mostrarSelector) {
-                    if (categoriaPrincipal != null) {
+                    if (categoriaPrincipal) {
                         data.categoria_principal = categoriaPrincipal;
                         const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`, data);
 
@@ -120,15 +120,15 @@ const RegisterCategory = ({ navigation, route }) => {
     }
 
     const editarCategoria = async () => {
-        if (Authentication.verificarTokenGuardado) {
+        if (await Authentication.verificarTokenGuardado()) {
             let data = {
                 "nombre": categoriaNombre,
                 "descripcion": categoriaDescripcion,
             }
 
-            if (data.nombre != null && data.nombre != '') {
+            if (data.nombre && data.nombre) {
                 if (mostrarSelector) {
-                    if (categoriaPrincipal != null) {
+                    if (categoriaPrincipal) {
                         data.categoria_principal = categoriaPrincipal;
                         const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, data);
 
