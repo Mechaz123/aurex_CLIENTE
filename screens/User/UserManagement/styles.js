@@ -86,6 +86,18 @@ export default StyleSheet.create({
         width: 100,
         height: 30,
     },
+    table_header_actions: {
+        textAlign: 'center',
+        color: colors.white,
+        backgroundColor: colors.primary,
+        fontSize: 10,
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: colors.text_basic,
+        width: 190,
+        height: 30,
+    },
     table_text_large: {
         textAlignVertical: 'center',
         textAlign: 'center',
@@ -116,7 +128,7 @@ export default StyleSheet.create({
         borderRightWidth: 1,
         borderBottomWidth: 1,
         borderColor: colors.text_basic,
-        width: 100,
+        width: 190,
         height: 30,
     },
     table_button: {

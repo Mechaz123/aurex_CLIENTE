@@ -27,5 +27,11 @@ export const screenOptions = {
     },
     UserRole: {
         title: "AUREX"
+    },
+    WriteCardUserManagement: {
+        headerShown: false,
+    },
+    ReadCardUserManagement: {
+        headerShown: false,
     }
 };

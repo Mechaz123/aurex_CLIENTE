@@ -101,6 +101,16 @@ const UserManagement = ({ navigation }) => {
         }
     }
 
+    const escribirTarjeta = async (idUsuario) => {
+        const ID = idUsuario;
+        navigation.replace("WriteCardUserManagement", { ID });
+    }
+
+    const verificarTarjeta = async (idUsuario) => {
+        const ID = idUsuario;
+        navigation.replace("ReadCardUserManagement", { ID });
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.container_title}>
@@ -116,7 +126,7 @@ const UserManagement = ({ navigation }) => {
                             <View style={styles.table}>
                                 <Text style={styles.table_header_large}>Correo</Text>
                                 <Text style={styles.table_header}>Estado</Text>
-                                <Text style={styles.table_header}>Acciones</Text>
+                                <Text style={styles.table_header_actions}>Acciones</Text>
                             </View>
                         )} renderItem={({ item }) => (
                             <View style={styles.table}>
@@ -131,6 +141,15 @@ const UserManagement = ({ navigation }) => {
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.table_button} onPress={() => generarNuevaClave(item.id)}>
                                         <Text style={styles.button_text}>🔑</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.table_button} onPress={() => escribirTarjeta(item.id)}>
+                                        <Text style={styles.button_text}>✍🏻</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.table_button} onPress={() => verificarTarjeta(item.id)}>
+                                        <Text style={styles.button_text}>🕵🏻</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.table_button}>
+                                        <Text style={styles.button_text}>💸</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>

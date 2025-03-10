@@ -6,6 +6,8 @@ import DrawerNavigator from "../DrawerNavigator/DrawerNavigator";
 import WriteCard from "../../screens/User/WriteCard/WriteCard";
 import UserRole from "../../screens/UserRole/UserRole";
 import { screenOptions, stackScreenOptions } from "./stackOptions";
+import WriteCardUserManagement from "../../screens/User/UserManagement/WriteCardUserManagement/WriteCardUserManagement";
+import ReadCardUserManagement from "../../screens/User/UserManagement/ReadCardUserManagement/ReadCardUserManagement";
 
 const Stack = createStackNavigator();
 
@@ -17,6 +19,8 @@ const StackNavigator = () => {
             <Stack.Screen name="Menu" component={DrawerNavigator} options={screenOptions.Menu} />
             <Stack.Screen name="WriteCard" component={WriteCard} options={screenOptions.WriteCard} />
             <Stack.Screen name="UserRole" component={UserRole} options={screenOptions.UserRole} />
+            <Stack.Screen name="WriteCardUserManagement" component={WriteCardUserManagement} options={screenOptions.WriteCardUserManagement} />
+            <Stack.Screen name="ReadCardUserManagement" component={ReadCardUserManagement} options={screenOptions.ReadCardUserManagement} />
         </Stack.Navigator>
     );
 }

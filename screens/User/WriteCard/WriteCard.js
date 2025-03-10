@@ -21,7 +21,7 @@ const WriteCard = ({ navigation, route }) => {
 
         if (response.Success) {
             const jsonDATA = {
-                "id": response.Data.id,
+                "id": String(response.Data.id),
                 "clave": response.Data.clave
             }
 
@@ -45,17 +45,18 @@ const WriteCard = ({ navigation, route }) => {
 
                 if (responseTerminosYCondiciones.Success && responseUsuarioRegistrado.Success) {
                     Alert.alert("EXITO ✅", "Su tarjeta fue configurada correctamente y se ha enviado los mensajes al correo registrado.");
-                    navigation.replace("Login");
+                    navigation.replace("Menu");
                 } else {
-                    setBotonActivo(false);
-                    Alert.alert("ERROR ❌", "Error su tarjeta no pudo ser configurada, por favor intente de nuevo.");
+                    Alert.alert("ERROR ❌", `Por favor verificar la tarjeta en el panel de "Gestión de Usuarios", no se pudo enviar los correos al usuario.`);
+                    navigation.replace("Menu");
                 }
             } else {
-                setBotonActivo(false);
-                Alert.alert("ERROR ❌", "Error su tarjeta no pudo ser configurada, por favor intente de nuevo.");
+                Alert.alert("ERROR ❌", `Error su tarjeta no pudo ser configurada, por favor intente de nuevo desde el módulo de "Gestión de usuarios", el usuario ya se encuentra creado.`);
+                navigation.replace("Menu");
             }
         } else {
             Alert.alert("ERROR ❌", "No se pudo cargar la data del usuario.");
+            navigation.replace("Menu");
         }
 
     }

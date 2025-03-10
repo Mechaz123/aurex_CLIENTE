@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import useNFCScanner from '../../hooks/useNFCScanner';
-import utils from '../../services/Utils';
+import Utils from '../../services/Utils';
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NFCAuthentication = ({ navigation, route }) => {
     const { nombreUsuario } = route.params;
-    let { scanNFC } = useNFCScanner();
+    const { scanNFC } = useNFCScanner();
 
     useEffect(() => {
         leerTarjeta();
@@ -25,9 +25,9 @@ const NFCAuthentication = ({ navigation, route }) => {
         }
     }
     const enviarAutenticacion = async (tag) => {
-        let jsonData = await utils.ConvertNfcToJson(tag);
+        let jsonData = await Utils.ConvertNfcToJson(tag);
         jsonData.nombre_usuario = nombreUsuario;
-        const usuarioData = await utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/autenticacion`, jsonData);
+        const usuarioData = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/autenticacion`, jsonData);
 
         if (usuarioData.Data != null) {
             await guardarToken(usuarioData.Data.token, jsonData.id);
