@@ -1,4 +1,4 @@
-import { Alert, FlatList, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, ScrollView, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -6,6 +6,7 @@ import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import colors from "../../../styles/colors";
+import CustomCardUser from "../../../components/CustomCardUser/CustomCardUser";
 
 const UserManagement = ({ navigation }) => {
     const [usuarios, setUsuarios] = useState([]);
@@ -121,38 +122,15 @@ const UserManagement = ({ navigation }) => {
             </View>
             <ScrollView horizontal>
                 <View style={styles.container_table}>
-                    <FlatList data={usuariosFiltrados} keyExtractor={(item) => item.id} style={styles.table_row}
-                        ListHeaderComponent={() => (
-                            <View style={styles.table}>
-                                <Text style={styles.table_header_large}>Correo</Text>
-                                <Text style={styles.table_header}>Estado</Text>
-                                <Text style={styles.table_header_actions}>Acciones</Text>
-                            </View>
-                        )} renderItem={({ item }) => (
-                            <View style={styles.table}>
-                                <Text style={styles.table_text_large}>{item.correo}</Text>
-                                <Text style={styles.table_text}>{item.estado_usuario.nombre}</Text>
-                                <View style={styles.table_actions}>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => editar(item.id)}>
-                                        <Text style={styles.button_text}>✏️</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => AsignarUsuarioRol(item.id)}>
-                                        <Text style={styles.button_text}>🏷️</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => generarNuevaClave(item.id)}>
-                                        <Text style={styles.button_text}>🔑</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => escribirTarjeta(item.id)}>
-                                        <Text style={styles.button_text}>✍🏻</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button} onPress={() => verificarTarjeta(item.id)}>
-                                        <Text style={styles.button_text}>🕵🏻</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.table_button}>
-                                        <Text style={styles.button_text}>💸</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
+                    <FlatList data={usuariosFiltrados} keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <CustomCardUser 
+                                user={item} edit={() => editar(item.id)}
+                                assignRole={() => AsignarUsuarioRol(item.id)}
+                                generateKey={() => generarNuevaClave(item.id)}
+                                configureCard={() => escribirTarjeta(item.id)}
+                                verifyCard={() => verificarTarjeta(item.id)}
+                            />
                         )} />
                 </View>
             </ScrollView>
