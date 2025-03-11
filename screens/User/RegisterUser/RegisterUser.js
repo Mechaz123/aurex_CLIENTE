@@ -7,7 +7,7 @@ import { launchImageLibrary } from "react-native-image-picker";
 import RNFS from 'react-native-fs';
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
-import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
+import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import { useFocusEffect } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 
@@ -49,7 +49,7 @@ const RegisterUser = ({ navigation, route }) => {
         if (await Authentication.verificarTokenGuardado()) {
             if (ID != undefined) {
                 setEstaEditando(true);
-                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/consultar/${ID}`);
 
                 if (response.Success) {
                     setUsuarioNombreUsuario(response.Data.nombre_usuario);

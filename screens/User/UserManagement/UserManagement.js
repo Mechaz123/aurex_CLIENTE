@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
-import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
+import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import colors from "../../../styles/colors";
 import CustomCardUser from "../../../components/CustomCardUser/CustomCardUser";
 
@@ -24,7 +24,7 @@ const UserManagement = ({ navigation }) => {
 
     const cargarUsuarios = async () => {
         if (await Authentication.verificarTokenGuardado()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario`);
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/todos`);
 
             if (response.Success) {
                 setUsuarios(response.Data);
@@ -64,7 +64,7 @@ const UserManagement = ({ navigation }) => {
 
     const generarNuevaClave = async (ID) => {
         if (await Authentication.verificarTokenGuardado()) {
-            const responseGet = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`);
+            const responseGet = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/consultar/${ID}`);
 
             if (responseGet.Success) {
                 Alert.alert(

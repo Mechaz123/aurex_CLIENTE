@@ -36,7 +36,7 @@ const UserRole = ({ navigation, route }) => {
 
     const consultarUsuario = async () => {
         if (await Authentication.verificarTokenGuardado()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`);
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/consultar/${ID}`);
 
             if (response.Success) {
                 setUsuarioCorreo(response.Data.correo);
