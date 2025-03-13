@@ -4,7 +4,5 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autoli
 rootProject.name = 'aurex_cliente'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
-include ':react-native-async-storage'
-project(':react-native-async-storage').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-async-storage/async-storage/android')
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')
