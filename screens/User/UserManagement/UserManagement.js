@@ -112,6 +112,11 @@ const UserManagement = ({ navigation }) => {
         navigation.replace("ReadCardUserManagement", { ID });
     }
 
+    const IngresarDinero = async (idUsuario) => {
+        const ID = idUsuario;
+        navigation.navigate("DepositMoney", { ID });
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.container_title}>
@@ -130,6 +135,7 @@ const UserManagement = ({ navigation }) => {
                                 generateKey={() => generarNuevaClave(item.id)}
                                 configureCard={() => escribirTarjeta(item.id)}
                                 verifyCard={() => verificarTarjeta(item.id)}
+                                depositMoney={() => IngresarDinero(item.id)}
                             />
                         )} />
                 </View>

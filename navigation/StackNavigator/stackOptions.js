@@ -33,5 +33,8 @@ export const screenOptions = {
     },
     ReadCardUserManagement: {
         headerShown: false,
+    },
+    DepositMoney: {
+        title: "AUREX"
     }
 };

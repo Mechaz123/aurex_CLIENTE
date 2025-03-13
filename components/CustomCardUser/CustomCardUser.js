@@ -3,7 +3,7 @@ import styles from "./styles";
 
 const DefaultImageUser = require("../../static/img/sin_foto.png");
 
-const CustomCardUser = ({ user, edit, assignRole, generateKey, configureCard, verifyCard }) => {
+const CustomCardUser = ({ user, edit, assignRole, generateKey, configureCard, verifyCard, depositMoney }) => {
     const getUserImage = () => {
         if (user.imagen_url == null) {
             return DefaultImageUser;
@@ -42,7 +42,7 @@ const CustomCardUser = ({ user, edit, assignRole, generateKey, configureCard, ve
                     <Text style={styles.icon}>👁️‍🗨️</Text>
                     <Text style={styles.buttonText}>Verificar tarjeta</Text>
                 </TouchableOpacity>
-                <TouchableOpacity styles={styles.actionButton}>
+                <TouchableOpacity styles={styles.actionButton} onPress={depositMoney}>
                     <Text style={styles.icon}>💸</Text>
                     <Text style={styles.buttonText}>Ingresar Dinero</Text>
                 </TouchableOpacity>

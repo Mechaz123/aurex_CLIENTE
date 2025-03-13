@@ -174,11 +174,47 @@ const UserRole = ({ navigation, route }) => {
                         }
                     }
 
-                    const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario_rol`, data);
+                    const responseUsuarioRol = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario_rol`, data);
 
-                    if (response.Success) {
-                        Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
-                        navigation.replace("Menu");
+                    if (responseUsuarioRol.Success) {
+                        const responseVerificacionRoles = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `credito/verificar_roles/${data.usuario.id}`);
+
+                        if (responseVerificacionRoles.Success) {
+                            if (responseVerificacionRoles.Data == true) {
+                                const responseVerificacionRegistro = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `credito/verificar_registro/${data.usuario.id}`);
+
+                                if (responseVerificacionRegistro.Success) {
+                                    if (responseVerificacionRegistro.Data == true) {
+                                        const dataCredito = {
+                                            "usuario": {
+                                                "id": ID
+                                            },
+                                            "monto": 0
+                                        }
+
+                                        const responseCredito = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `credito`, dataCredito);
+
+                                        if (responseCredito.Success) {
+                                            Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
+                                            navigation.replace("Menu");
+                                        } else {
+                                            Alert.alert("ERROR ❌", "Ocurrió un error al crear el credito del usuario.");
+                                        }
+                                    } else {
+                                        Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
+                                        navigation.replace("Menu");
+                                    }
+
+                                } else {
+                                    Alert.alert("ERROR ❌", "Ocurrió un error al verificar el registro del credito.");
+                                }
+                            } else {
+                                Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
+                                navigation.replace("Menu");
+                            }
+                        } else {
+                            Alert.alert("ERROR ❌", "Ocurrió un error al verificar el rol para el registro del credito.");
+                        }
                     } else {
                         Alert.alert("ERROR ❌", "El rol para el usuario no fue creado.");
                     }
