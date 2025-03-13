@@ -9,8 +9,10 @@ import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react
 import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomButton from "../../components/CustomButton/CustomButton";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const RolePermission = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
     const [opcionesRol, setOpcionesRol] = useState([]);
     const [opcionesPermiso, setOpcionesPermiso] = useState([]);
     const [rolSeleccionado, setRolSeleccionado] = useState(null);
@@ -25,6 +27,7 @@ const RolePermission = ({ navigation }) => {
             cargarOpcionesRol();
             cargarOpcionesPermiso();
             return (() => {
+                setLoading(false);
                 setOpcionesRol([]);
                 setOpcionesPermiso([]);
                 setRolSeleccionado(null);
@@ -38,6 +41,8 @@ const RolePermission = ({ navigation }) => {
     );
 
     const cargarOpcionesRol = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`);
 
@@ -45,41 +50,15 @@ const RolePermission = ({ navigation }) => {
                 if (Object.keys(response.Data).length != 0) {
                     setOpcionesRol(response.Data);
                 } else {
+                    setLoading(false);
                     Alert.alert("ADVERTENCIA ⚠️", "No existen roles en el sistema.");
                 }
             } else {
-                Alert("ERROR ❌", "No se pudo cargar las opciones.");
+                setLoading(false);
+                Alert.alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
-            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
-            navigation.replace("Login");
-        }
-    }
-
-    const cargarRolePermiso = async (itemValue) => {
-        if (await Authentication.verificarTokenGuardado()) {
-            setMostrarSwitch(false);
-            setMostrarSelector(false);
-            
-            if (itemValue != null) {
-                setRolSeleccionado(itemValue);
-                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `rol/${itemValue}/permisos`);
-
-                if (response.Success) {
-                    if (Object.keys(response.Data).length != 0) {
-                        setRolPermiso(response.Data);
-                        setMostrarTabla(true);
-                    } else {
-                        setRolPermiso([]);
-                        setMostrarTabla(false);
-                        Alert.alert("ADVERTENCIA ⚠️", "El rol no tiene permisos o los permisos no se encuentran activos.");
-                    }
-                    setMostrarSwitch(true);
-                } else {
-                    Alert("ERROR ❌", "No se pueden cargar los permisos del rol.");
-                }
-            }
-        } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -92,24 +71,66 @@ const RolePermission = ({ navigation }) => {
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
                     setOpcionesPermiso(response.Data);
+                    setLoading(false);
                 } else {
+                    setLoading(false);
                     Alert.alert("ADVERTENCIA ⚠️", "No existen permisos activos en el sistema.");
                 }
             } else {
-                Alert("ERROR ❌", "No se pudo cargar las opciones.");
+                setLoading(false);
+                Alert.alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
+            setLoading(false);
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
+        }
+    }
+
+    const cargarRolePermiso = async (itemValue) => {
+        setLoading(true);
+
+        if (await Authentication.verificarTokenGuardado()) {
+            setMostrarSwitch(false);
+            setMostrarSelector(false);
+            
+            if (itemValue != null) {
+                setRolSeleccionado(itemValue);
+                const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `rol/${itemValue}/permisos`);
+
+                if (response.Success) {
+                    if (Object.keys(response.Data).length != 0) {
+                        setRolPermiso(response.Data);
+                        setMostrarTabla(true);
+                        setLoading(false);
+                    } else {
+                        setRolPermiso([]);
+                        setMostrarTabla(false);
+                        setLoading(false);
+                        Alert.alert("ADVERTENCIA ⚠️", "El rol no tiene permisos o los permisos no se encuentran activos.");
+                    }
+                    setMostrarSwitch(true);
+                } else {
+                    setLoading(false);
+                    Alert.alert("ERROR ❌", "No se pueden cargar los permisos del rol.");
+                }
+            }
+        } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cambiarEstado = async (ID) => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`);
 
             if (response.Success) {
                 let DataRolPermiso = response.Data;
+                setLoading(false);
 
                 if (DataRolPermiso.activo) {
                     Alert.alert(
@@ -123,12 +144,15 @@ const RolePermission = ({ navigation }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El permiso del rol fue inactivado.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "El permiso del rol no fue inactivado.");
                                     }
                                 }
@@ -137,6 +161,7 @@ const RolePermission = ({ navigation }) => {
                         { cancelable: false }
                     )
                 } else {
+                    setLoading(false);
                     Alert.alert(
                         "ACTIVO ✅",
                         "Esta seguro que desea activar el permiso del rol?",
@@ -148,13 +173,16 @@ const RolePermission = ({ navigation }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     DataRolPermiso.activo = true;
                                     const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso/${ID}`, DataRolPermiso);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El permiso del rol fue activado.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "El permiso del rol no fue activado.");
                                     }
                                 }
@@ -165,12 +193,15 @@ const RolePermission = ({ navigation }) => {
                 }
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const crearRolPermiso = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             if (permisoSeleccionado != null) {
                 const verificarRolPermisoCreados = rolPermiso.filter((data) => (data.rol.id == rolSeleccionado) && (data.permiso.id == permisoSeleccionado)).length;
@@ -187,18 +218,23 @@ const RolePermission = ({ navigation }) => {
                     const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol_permiso`, data);
 
                     if (response.Success) {
+                        setLoading(false);
                         Alert.alert("EXITO ✅", "El rol-permiso fue creado.");
                         navigation.replace("Menu");
                     } else {
+                        setLoading(false);
                         Alert.alert("ERROR ❌", "El rol-permiso no fue creado.");
                     }
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "El rol-permiso ya existe.");
                 }
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Por favor seleccione un permiso para el rol.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -206,6 +242,7 @@ const RolePermission = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <ScrollView>
                 <Text style={styles.title}>👮🏻 Gestionar permisos de roles</Text>
                 <View style={styles.selectContainer}>

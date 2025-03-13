@@ -7,8 +7,10 @@ import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import colors from "../../../styles/colors";
 import CustomCardUser from "../../../components/CustomCardUser/CustomCardUser";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const UserManagement = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
     const [usuarios, setUsuarios] = useState([]);
     const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
 
@@ -16,6 +18,7 @@ const UserManagement = ({ navigation }) => {
         useCallback(() => {
             cargarUsuarios();
             return (() => {
+                setLoading(false);
                 setUsuarios([]);
                 setUsuariosFiltrados([]);
             })
@@ -23,16 +26,20 @@ const UserManagement = ({ navigation }) => {
     );
 
     const cargarUsuarios = async () => {
+        setLoading(true);
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/todos`);
 
             if (response.Success) {
                 setUsuarios(response.Data);
                 setUsuariosFiltrados(response.Data);
+                setLoading(false);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo cargar los usuarios.")
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -63,10 +70,13 @@ const UserManagement = ({ navigation }) => {
     }
 
     const generarNuevaClave = async (ID) => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const responseGet = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/consultar/${ID}`);
 
             if (responseGet.Success) {
+                setLoading(false);
                 Alert.alert(
                     "GENERAR NUEVA CLAVE 🔑",
                     "¿Esta seguro/a de generar una nueva clave para el usuario?",
@@ -78,6 +88,7 @@ const UserManagement = ({ navigation }) => {
                         {
                             text: "Si",
                             onPress: async () => {
+                                setLoading(true);
                                 const data = {
                                     "clave": responseGet.Data.nombre_usuario,
                                 }
@@ -85,8 +96,10 @@ const UserManagement = ({ navigation }) => {
                                 const responsePut = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`, data);
 
                                 if (responsePut.Success) {
+                                    setLoading(false);
                                     Alert.alert("EXITO ✅", "Se ha generado una nueva clave para el usuario.");
                                 } else {
+                                    setLoading(false);
                                     Alert.alert("ERROR ❌", "Ocurrió un error, por favor intente de nuevo.");
                                 }
                             }
@@ -94,9 +107,11 @@ const UserManagement = ({ navigation }) => {
                     ]
                 )
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Ocurrió un error, por favor intente de nuevo.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -119,6 +134,7 @@ const UserManagement = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <View style={styles.container_title}>
                 <Text style={styles.title}>🧑🏻‍💻 Gestionar Usuarios</Text>
             </View>

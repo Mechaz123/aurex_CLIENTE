@@ -10,9 +10,11 @@ import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import { useFocusEffect } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const RegisterUser = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
+    const [loading, setLoading] = useState(false);
     const [usuarioNombreUsuario, setUsuarioNombreUsuario] = useState(null);
     const [usuarioCorreo, setUsuarioCorreo] = useState(null);
     const [usuarioNombre, setUsuarioNombre] = useState(null);
@@ -41,11 +43,14 @@ const RegisterUser = ({ navigation, route }) => {
                 setOpcionesEstadoUsuario([]);
                 setEstaEditando(false);
                 ID = undefined;
+                setLoading(false);
             })
         }, [route.params])
     )
 
     const cargarDataUsuario = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             if (ID != undefined) {
                 setEstaEditando(true);
@@ -65,13 +70,16 @@ const RegisterUser = ({ navigation, route }) => {
                     if (response.Data.imagen_url != null) {
                         setUsuarioImagen(String(response.Data.imagen_url));
                     }
+
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "No se pudo cargar la data.");
                 }
             } else {
                 setEstaEditando(false);
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -85,10 +93,13 @@ const RegisterUser = ({ navigation, route }) => {
                 if (Object.keys(response.Data).length != 0) {
                     setOpcionesEstadoUsuario(response.Data);
                 }
+                setLoading(false);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo cargar las opciones de estado del usuario.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -109,6 +120,8 @@ const RegisterUser = ({ navigation, route }) => {
     }
 
     const crearUsuario = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
 
             if (usuarioNombreUsuario && usuarioCorreo && usuarioNombre && usuarioApellido && usuarioDireccion && usuarioNumeroContacto && usuarioPais) {
@@ -130,23 +143,29 @@ const RegisterUser = ({ navigation, route }) => {
 
                 if (response.Success) {
                     const ID = response.Data.id;
+                    setLoading(false);
                     navigation.replace("WriteCard", { ID });
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "El usuario no fue creado.");
                 }
             } else {
+                setLoading(false);
                 Alert.alert(
                     "ERROR ❌",
                     "Complete el formulario, los siguientes campos son requeridos para crear al usuario:\n\n- Nombre de usuario \n- Correo \n- Nombre \n- Apellido \n- Dirección \n- Número de contacto \n- País"
                 );
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const editarUsuario = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
 
             if (usuarioNombreUsuario && usuarioCorreo && usuarioNombre && usuarioApellido && usuarioDireccion && usuarioNumeroContacto && usuarioPais) {
@@ -166,18 +185,22 @@ const RegisterUser = ({ navigation, route }) => {
                  const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario/${ID}`, data);
 
                  if (response.Success) {
+                    setLoading(false);
                     Alert.alert("EXITO ✅", "El usuario ha sido editado.");
                     navigation.replace("Menu");
                  } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "El usuario no fue editado.");
                  }
             } else {
+                setLoading(false);
                 Alert.alert(
                     "ERROR ❌",
                     "Complete el formulario, los siguientes campos son requeridos para crear al usuario:\n\n- Nombre de usuario \n- Correo \n- Nombre \n- Apellido \n- Dirección \n- Número de contacto \n- País"
                 );
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -186,6 +209,7 @@ const RegisterUser = ({ navigation, route }) => {
     return (
         <ScrollView style={styles.ScrollView}>
             <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
                 <Text style={styles.title}>{estaEditando ? "✏️ Editar Usuario" : "👤 Registrar Usuarios"}</Text>
                 <TextInput style={styles.textInput} placeholder="Nombre de usuario" placeholderTextColor={colors.menu_inactive_option} value={usuarioNombreUsuario} onChangeText={setUsuarioNombreUsuario} />
                 <TextInput keyboardType="email-address" style={styles.textInput} placeholder="Correo" placeholderTextColor={colors.menu_inactive_option} value={usuarioCorreo} onChangeText={setUsuarioCorreo} />

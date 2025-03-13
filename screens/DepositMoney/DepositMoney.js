@@ -6,9 +6,11 @@ import { Alert, Text, TextInput, View } from "react-native";
 import styles from "./styles";
 import colors from "../../styles/colors";
 import CustomButton from "../../components/CustomButton/CustomButton";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const DepositMoney = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
+    const [loading, setLoading] = useState(false);
     const [usuarioPermitido, setUsuarioPermitido] = useState(false);
     const [usuarioCorreo, setUsuarioCorreo] = useState(null);
     const [usuarioNombreUsuario, setUsuarioNombreUsuario] = useState(null);
@@ -22,6 +24,7 @@ const DepositMoney = ({ navigation, route }) => {
         consultarMonto();
         return (() => {
             ID = undefined;
+            setLoading(false);
             setUsuarioPermitido(false);
             setUsuarioCorreo(null);
             setUsuarioNombreUsuario(null);
@@ -32,6 +35,8 @@ const DepositMoney = ({ navigation, route }) => {
     }, [route.params]);
 
     const verificarRolesPropietario = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `credito/verificar_roles/${ID}`);
 
@@ -39,12 +44,15 @@ const DepositMoney = ({ navigation, route }) => {
                 if (response.Data == true) {
                     setUsuarioPermitido(true);
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "El usuario no cuenta con alguno de los siguientes roles activos:\n\n- Comprador\n- Vendedor");
                 }
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo verificar los roles del usuario.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -58,9 +66,11 @@ const DepositMoney = ({ navigation, route }) => {
                 setUsuarioCorreo(response.Data.correo);
                 setUsuarioNombreUsuario(response.Data.nombre_usuario);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Ocurrió un error al consultar al usuario, por favor intente de nuevo.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -73,16 +83,21 @@ const DepositMoney = ({ navigation, route }) => {
             if (response.Success) {
                 setMontoActual(response.Data.monto);
                 setIdCredito(response.Data.id);
+                setLoading(false);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Ocurrió un error al consultar el monto actual del usuario, por favor intente de nuevo.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const ingresarMonto = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             if (montoIngreso > 0) {
                 const montoTotal = parseFloat(montoIngreso) + parseFloat(montoActual);
@@ -105,18 +120,23 @@ const DepositMoney = ({ navigation, route }) => {
                     const responseMensaje = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `email/enviar`, dataMensaje);
 
                     if (responseMensaje.Success) {
+                        setLoading(false);
                         Alert.alert("EXITO ✅", "El dinero ha sido ingresado.");
                         navigation.replace("Menu");
                     } else {
+                        setLoading(false);
                         Alert.alert("WARNING ⚠️", "Ocurrió un error al enviar el correo al usuario, pero el dinero ya fue ingresado.");
                     }
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "Ocurrió un error al intentar ingresar el dinero, por favor intente de nuevo.");
                 }
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Debe ingresar un valor mayor a 0 para registrar el dinero.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -124,6 +144,7 @@ const DepositMoney = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <Text style={styles.title}>💸 Ingresar Dinero</Text>
             {usuarioPermitido && (
                 <>

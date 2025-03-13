@@ -5,29 +5,37 @@ import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
 import { useFocusEffect } from "@react-navigation/native";
+import Spinner from "react-native-loading-spinner-overlay";
+import colors from "../../../styles/colors";
 
 const ViewCategories = ({ navigation }) => {
     const [categorias, setCategorias] = useState([]);
-
+    const [loading, setLoading] = useState(false);
     useFocusEffect(
         useCallback(() => {
             cargarCategorias();
             return (() => {
                 setCategorias([]);
+                setLoading(false);
             })
         }, [])
     );
 
     const cargarCategorias = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`);
 
             if (response.Success) {
                 setCategorias(response.Data);
+                setLoading(false);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo cargar las categorias.")
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -38,10 +46,13 @@ const ViewCategories = ({ navigation }) => {
     }
 
     const cambiarEstado = async (ID) => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
 
             if (response.Success) {
+                setLoading(false);
                 let DataCategoria = response.Data;
 
                 if (DataCategoria.activo) {
@@ -56,12 +67,15 @@ const ViewCategories = ({ navigation }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "La categoria fue inactivada.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "La categoria no fue inactivada.");
                                     }
                                 }
@@ -81,13 +95,16 @@ const ViewCategories = ({ navigation }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     DataCategoria.activo = true;
                                     const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, DataCategoria);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "La categoria fue activada.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "La categoria no fue activada.");
                                     }
                                 }
@@ -98,6 +115,7 @@ const ViewCategories = ({ navigation }) => {
                 }
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -105,6 +123,7 @@ const ViewCategories = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <View style={styles.container_title}>
                 <Text style={styles.title}>🔍 Ver Categorias</Text>
             </View>

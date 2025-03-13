@@ -8,9 +8,11 @@ import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_MID_URL, AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import { useFocusEffect } from "@react-navigation/native";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const RegisterCategory = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
+    const [loading, setLoading] = useState(false);
     const [categoriaNombre, setCategoriaNombre] = useState(null);
     const [categoriaDescripcion, setCategoriaDescripcion] = useState(null);
     const [mostrarSelector, setMostrarSelector] = useState(false);
@@ -23,6 +25,7 @@ const RegisterCategory = ({ navigation, route }) => {
             cargarDataCategoria();
             cargarOpcionesCategoria();
             return (() => {
+                setLoading(false);
                 setCategoriaNombre(null);
                 setCategoriaDescripcion(null);
                 setMostrarSelector(false);
@@ -35,7 +38,10 @@ const RegisterCategory = ({ navigation, route }) => {
     );
 
     const cargarDataCategoria = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
+
             if (ID != undefined) {
                 setEstaEditando(true);
                 const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`);
@@ -49,12 +55,14 @@ const RegisterCategory = ({ navigation, route }) => {
                         setCategoriaPrincipal(response.Data.categoria_principal.id);
                     }
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "No se pudo cargar la data.");
                 }
             } else {
                 setEstaEditando(false);
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -67,17 +75,22 @@ const RegisterCategory = ({ navigation, route }) => {
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
                     setOpcionesCategoria(response.Data);
+                    setLoading(false);
                 }
             } else {
-                Alert("ERROR ❌", "No se pudo cargar las opciones.");
+                setLoading(false);
+                Alert.alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const crearCategoria = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             let data = {
                 "nombre": categoriaNombre,
@@ -91,12 +104,15 @@ const RegisterCategory = ({ navigation, route }) => {
                         const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`, data);
 
                         if (response.Success) {
+                            setLoading(false);
                             Alert.alert("EXITO ✅", "La categoria ha sido creada.");
                             navigation.replace("Menu");
                         } else {
+                            setLoading(false);
                             Alert.alert("ERROR ❌", "La categoria no fue creada.");
                         }
                     } else {
+                        setLoading(false);
                         Alert.alert("ERROR ❌", "Por favor seleccione la categoria principal.");
                     }
                 } else {
@@ -104,22 +120,28 @@ const RegisterCategory = ({ navigation, route }) => {
                     const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria`, data);
 
                     if (response.Success) {
+                        setLoading(false);
                         Alert.alert("Success ✅", "La categoria ha sido creada.");
                         navigation.replace("Menu");
                     } else {
+                        setLoading(false);
                         Alert.alert("ERROR ❌", "La categoria no fue creada.");
                     }
                 }
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const editarCategoria = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             let data = {
                 "nombre": categoriaNombre,
@@ -133,12 +155,15 @@ const RegisterCategory = ({ navigation, route }) => {
                         const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, data);
 
                         if (response.Success) {
+                            setLoading(false);
                             Alert.alert("EXITO ✅", "La categoria fue editada.");
                             navigation.replace("Menu");
                         } else {
+                            setLoading(false);
                             Alert.alert("ERROR ❌", "La categoria no fue editada.");
                         }
                     } else {
+                        setLoading(false);
                         Alert.alert("ERROR ❌", "Por favor seleccione una categoria principal.");
                     }
                 } else {
@@ -146,17 +171,21 @@ const RegisterCategory = ({ navigation, route }) => {
                     const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `categoria/${ID}`, data);
 
                     if (response.Success) {
+                        setLoading(false);
                         Alert.alert("EXITO ✅", "La categoria fue editada.");
                         navigation.replace("Menu");
                     } else {
+                        setLoading(false);
                         Alert.alert("ERROR ❌", "La categoria no fue editada.");
                     }
                 }
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Por favor complete los campos.");
             }
 
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -164,6 +193,7 @@ const RegisterCategory = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <Text style={styles.title}>{estaEditando ? "✏️ Editar Categoria" : "✏️ Registrar Categoria"}</Text>
             <TextInput style={styles.textInput} placeholder="Nombre" placeholderTextColor={colors.menu_inactive_option} value={categoriaNombre} onChangeText={setCategoriaNombre} />
             <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Descripción" placeholderTextColor={colors.menu_inactive_option} value={categoriaDescripcion} onChangeText={setCategoriaDescripcion} />

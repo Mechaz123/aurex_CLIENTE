@@ -4,27 +4,36 @@ import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
 import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
 import styles from "./styles";
+import Spinner from "react-native-loading-spinner-overlay";
+import colors from "../../../styles/colors";
 
 const ViewRoles = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
     const [roles, setRoles] = useState([]);
 
     useEffect(() => {
         cargarRoles();
         return (() => {
+            setLoading(false);
             setRoles([]);
         })
     }, []);
 
     const cargarRoles = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol`);
 
             if (response.Success) {
                 setRoles(response.Data);
+                setLoading(false);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "No se puede cargar los roles.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -34,10 +43,13 @@ const ViewRoles = ({ navigation }) => {
         navigation.navigate("RegisterRole", { ID });
     }
     const cambiarEstado = async (ID) => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
 
             if (response.Success) {
+                setLoading(false);
                 let DataRol = response.Data;
 
                 if (DataRol.activo) {
@@ -52,12 +64,15 @@ const ViewRoles = ({ navigation }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El rol fue inactivado.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "El rol no fue inactivado.");
                                     }
                                 }
@@ -77,13 +92,16 @@ const ViewRoles = ({ navigation }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     DataRol.activo = true;
                                     const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `rol/${ID}`, DataRol);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El rol fue activado.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "El rol no fue activado.");
                                     }
                                 }
@@ -94,6 +112,7 @@ const ViewRoles = ({ navigation }) => {
                 }
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -101,6 +120,7 @@ const ViewRoles = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <View style={styles.container_title}>
                 <Text style={styles.title}>🔍 Ver Roles</Text>
             </View>

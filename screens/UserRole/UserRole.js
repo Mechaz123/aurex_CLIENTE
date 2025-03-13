@@ -7,9 +7,11 @@ import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react
 import colors from "../../styles/colors";
 import { Picker } from "@react-native-picker/picker";
 import CustomButton from "../../components/CustomButton/CustomButton";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const UserRole = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
+    const [loading, setLoading] = useState(false);
     const [usuarioCorreo, setUsuarioCorreo] = useState(null);
     const [usuarioRoles, setUsuarioRoles] = useState([]);
     const [mostrarTabla, setMostrarTabla] = useState(false);
@@ -24,6 +26,7 @@ const UserRole = ({ navigation, route }) => {
         cargarOpcionesRoles();
         return (() => {
             ID = undefined;
+            setLoading(false);
             setUsuarioCorreo(null);
             setUsuarioRoles([]);
             setMostrarTabla(false);
@@ -35,15 +38,19 @@ const UserRole = ({ navigation, route }) => {
     }, []);
 
     const consultarUsuario = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/consultar/${ID}`);
 
             if (response.Success) {
                 setUsuarioCorreo(response.Data.correo);
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Ocurrió un error al consultar al usuario, por favor intente de nuevo.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -59,45 +66,58 @@ const UserRole = ({ navigation, route }) => {
                 if (Object.keys(response.Data).length != 0) {
                     setUsuarioRoles(response.Data);
                     setMostrarTabla(true);
+                    setLoading(false);
                 } else {
                     setUsuarioRoles([]);
                     setMostrarTabla(false);
+                    setLoading(false);
                     Alert.alert("ADVERTENCIA ⚠️", "El usuario no tiene roles asignados.");
                 }
                 setMostrarSwitch(true);
             } else {
+                setLoading(false);
                 Alert("ERROR ❌", "No se pueden cargar los roles del usuario.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cargarOpcionesRoles = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `rol/activos`);
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
                     setOpcionesRol(response.Data);
+                    setLoading(false);
                 } else {
+                    setLoading(false);
                     Alert.alert("ADVERTENCIA ⚠️", "No existen roles activos en el sistema.");
                 }
             } else {
+                setLoading(false);
                 Alert("ERROR ❌", "No se pudo cargar las opciones.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const cambiarEstado = async (idUsuarioRol) => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario_rol/${idUsuarioRol}`);
 
             if (response.Success) {
+                setLoading(false);
                 let DataUsuarioRol = response.Data;
 
                 if (DataUsuarioRol.activo) {
@@ -112,12 +132,15 @@ const UserRole = ({ navigation, route }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     const response = await Utils.sendDeleteRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario_rol/${idUsuarioRol}`);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El rol del usuario fue inactivado.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "El rol del usuario no fue inactivado.");
                                     }
                                 }
@@ -137,13 +160,16 @@ const UserRole = ({ navigation, route }) => {
                             {
                                 text: "Si",
                                 onPress: async () => {
+                                    setLoading(true);
                                     DataUsuarioRol.activo = true;
                                     const response = await Utils.sendPutRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `usuario_rol/${idUsuarioRol}`, DataUsuarioRol);
 
                                     if (response.Success) {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El rol del usuario fue activado.");
                                         navigation.replace("Menu");
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("ERROR ❌", "El rol del usuario no fue activado.");
                                     }
                                 }
@@ -154,12 +180,15 @@ const UserRole = ({ navigation, route }) => {
                 }
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
     }
 
     const crearUsuarioRol = async () => {
+        setLoading(true);
+
         if (await Authentication.verificarTokenGuardado()) {
             if (rolSeleccionado != null) {
                 const verificarUsuarioRolCreados = usuarioRoles.filter((data) => (data.usuario.id == ID) && (data.rol.id == rolSeleccionado)).length;
@@ -195,36 +224,46 @@ const UserRole = ({ navigation, route }) => {
                                         const responseCredito = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `credito`, dataCredito);
 
                                         if (responseCredito.Success) {
+                                            setLoading(false);
                                             Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
                                             navigation.replace("Menu");
                                         } else {
+                                            setLoading(false);
                                             Alert.alert("ERROR ❌", "Ocurrió un error al crear el credito del usuario.");
                                         }
                                     } else {
+                                        setLoading(false);
                                         Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
                                         navigation.replace("Menu");
                                     }
 
                                 } else {
+                                    setLoading(false);
                                     Alert.alert("ERROR ❌", "Ocurrió un error al verificar el registro del credito.");
                                 }
                             } else {
+                                setLoading(false);
                                 Alert.alert("EXITO ✅", "El rol para el usuario fue creado.");
                                 navigation.replace("Menu");
                             }
                         } else {
+                            setLoading(false);
                             Alert.alert("ERROR ❌", "Ocurrió un error al verificar el rol para el registro del credito.");
                         }
                     } else {
+                        setLoading(false);
                         Alert.alert("ERROR ❌", "El rol para el usuario no fue creado.");
                     }
                 } else {
+                    setLoading(false);
                     Alert.alert("ERROR ❌", "El usuario ya tiene este rol.");
                 }
             } else {
+                setLoading(false);
                 Alert.alert("ERROR ❌", "Por favor seleccione rol para el usuario.");
             }
         } else {
+            setLoading(false);
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
@@ -232,6 +271,7 @@ const UserRole = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
             <Text style={styles.title}>🏷️ Asignar Rol</Text>
             <Text style={styles.textEmail}>Correo: {usuarioCorreo}</Text>
             {mostrarTabla && (
