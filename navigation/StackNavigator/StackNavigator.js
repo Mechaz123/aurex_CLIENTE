@@ -9,6 +9,7 @@ import { screenOptions, stackScreenOptions } from "./stackOptions";
 import WriteCardUserManagement from "../../screens/User/UserManagement/WriteCardUserManagement/WriteCardUserManagement";
 import ReadCardUserManagement from "../../screens/User/UserManagement/ReadCardUserManagement/ReadCardUserManagement";
 import DepositMoney from "../../screens/DepositMoney/DepositMoney";
+import DetailsProduct from "../../screens/Products/PurchaseProducts/DetailsProduct/DetailsProduct";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ const StackNavigator = () => {
             <Stack.Screen name="WriteCardUserManagement" component={WriteCardUserManagement} options={screenOptions.WriteCardUserManagement} />
             <Stack.Screen name="ReadCardUserManagement" component={ReadCardUserManagement} options={screenOptions.ReadCardUserManagement} />
             <Stack.Screen name="DepositMoney" component={DepositMoney} options={screenOptions.DepositMoney} />
+            <Stack.Screen name="DetailsProduct" component={DetailsProduct} options={screenOptions.DetailsProduct} />
         </Stack.Navigator>
     );
 }

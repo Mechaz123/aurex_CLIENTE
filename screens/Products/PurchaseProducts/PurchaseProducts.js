@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import styles from './styles';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,10 +7,10 @@ import colors from '../../../styles/colors';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Authentication from '../../../services/Authentication';
 import Utils from '../../../services/Utils';
-import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
+import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import CustomCardPurchase from '../../../components/CustomCardPurchase/CustomCardPurchase';
 
-const PurchaseProducts = () => {
+const PurchaseProducts = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [opcionesCategoriasPrincipales, setOpcionesCategoriasPrincipales] = useState([]);
     const [opcionesCategoriasSecundarias, setOpcionesCategoriasSecundarias] = useState([]);
@@ -145,6 +145,11 @@ const PurchaseProducts = () => {
 
     }
 
+    const detallesProducto = async (idProducto) => {
+        const ID = idProducto;
+        navigation.navigate("DetailsProduct", { ID });
+    }
+
     return (
         <View style={styles.container}>
             <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
@@ -174,7 +179,7 @@ const PurchaseProducts = () => {
                     <Text style={styles.text_products}>Seleccione el producto que desea comprar.</Text>
                     <FlatList data={productosFiltrados} keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => detallesProducto(item.id)}>
                                 <CustomCardPurchase title={item.nombre} description={item.descripcion} image={item.imagen_url} price={item.precio} />
                             </TouchableOpacity>
                         )}

@@ -36,5 +36,8 @@ export const screenOptions = {
     },
     DepositMoney: {
         title: "AUREX"
+    },
+    DetailsProduct: {
+        title: "AUREX"
     }
 };
