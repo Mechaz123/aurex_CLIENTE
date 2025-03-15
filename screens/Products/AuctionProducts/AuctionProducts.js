@@ -34,8 +34,8 @@ const AuctionProducts = ({ navigation }) => {
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
                     setProductosPropietario(response.Data);
-                    setLoading(false);
                 }
+                setLoading(false);
             } else {
                 setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo cargar los productos del propietario.");

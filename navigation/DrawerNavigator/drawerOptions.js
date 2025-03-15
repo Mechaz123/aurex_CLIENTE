@@ -25,7 +25,7 @@ export const screenOptions = {
     },
     Purchase: {
         title: "AUREX",
-        drawerLabel: "🛒 Comprar"
+        drawerLabel: "🛍️ Comprar"
     },
     Sell: {
         title: "AUREX",

@@ -75,8 +75,8 @@ const RegisterCategory = ({ navigation, route }) => {
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
                     setOpcionesCategoria(response.Data);
-                    setLoading(false);
                 }
+                setLoading(false);
             } else {
                 setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo cargar las opciones.");
