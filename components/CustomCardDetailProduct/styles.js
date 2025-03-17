@@ -5,7 +5,7 @@ export default StyleSheet.create({
         width: '100%',
         backgroundColor: "#fff",
         padding: 15,
-        marginVertical: 10,
+        marginVertical: 5,
         marginHorizontal: 16,
         borderRadius: 10,
         shadowColor: "#000",
@@ -17,7 +17,7 @@ export default StyleSheet.create({
     },
     image: {
         width: "100%",
-        height: 200,
+        height: 150,
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         resizeMode: 'contain',

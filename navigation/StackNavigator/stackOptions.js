@@ -39,5 +39,8 @@ export const screenOptions = {
     },
     DetailsProduct: {
         title: "AUREX"
+    },
+    VerifyPurchase: {
+        headerShown: false,
     }
 };

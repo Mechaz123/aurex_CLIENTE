@@ -10,6 +10,7 @@ import WriteCardUserManagement from "../../screens/User/UserManagement/WriteCard
 import ReadCardUserManagement from "../../screens/User/UserManagement/ReadCardUserManagement/ReadCardUserManagement";
 import DepositMoney from "../../screens/DepositMoney/DepositMoney";
 import DetailsProduct from "../../screens/Products/PurchaseProducts/DetailsProduct/DetailsProduct";
+import VerifyPurchase from "../../screens/Products/PurchaseProducts/VerifyPurchase/VerifyPurchase";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ const StackNavigator = () => {
             <Stack.Screen name="ReadCardUserManagement" component={ReadCardUserManagement} options={screenOptions.ReadCardUserManagement} />
             <Stack.Screen name="DepositMoney" component={DepositMoney} options={screenOptions.DepositMoney} />
             <Stack.Screen name="DetailsProduct" component={DetailsProduct} options={screenOptions.DetailsProduct} />
+            <Stack.Screen name="VerifyPurchase" component={VerifyPurchase} options={screenOptions.VerifyPurchase} />
         </Stack.Navigator>
     );
 }
