@@ -62,7 +62,6 @@ const RegisterUser = ({ navigation, route }) => {
                     setUsuarioNombre(response.Data.nombre);
                     setUsuarioApellido(response.Data.apellido);
                     setUsuarioDireccion(response.Data.direccion);
-                    setUsuarioDireccion(response.Data.pais);
                     setUsuarioNumeroContacto(response.Data.numero_contacto);
                     setUsuarioPais(response.Data.pais);
                     setUsuarioEstado(response.Data.estado_usuario.id);
