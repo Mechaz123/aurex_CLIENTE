@@ -75,6 +75,14 @@ export const screenOptions = {
         title: "AUREX",
         drawerLabel: "🧑🏻‍💻 Gestionar Usuarios"
     },
+    Order: {
+        title: "AUREX",
+        drawerLabel: "📋 Pedidos"
+    },
+    PurchaseHistory: {
+        title: "AUREX",
+        drawerLabel: "📦 Historial de compras"
+    },
     Logout: {
         drawerLabel: "🚪 Salir",
     },
