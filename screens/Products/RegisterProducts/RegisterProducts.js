@@ -24,7 +24,6 @@ const RegisterProducts = ({ navigation, route }) => {
     const [productoCategoria, setProductoCategoria] = useState(null);
     const [productoEstado, setProductoEstado] = useState(null);
     const [productoDestino, setProductoDestino] = useState(null);
-    const [opcionesCategoria, setOpcionesCategoria] = useState([]);
     const [opcionesCategoriaDisponibles, setOpcionesCategoriaDisponibles] = useState([]);
     const [opcionesProductoEstado, setOpcionesProductoEstado] = useState([]);
     const [estaEditando, setEstaEditando] = useState(false);
@@ -44,7 +43,6 @@ const RegisterProducts = ({ navigation, route }) => {
                 setProductoCategoria(null);
                 setProductoEstado(null);
                 setProductoDestino(null);
-                setOpcionesCategoria([]);
                 setOpcionesCategoriaDisponibles([]);
                 setOpcionesProductoEstado([]);
                 setEstaEditando(false);
@@ -61,13 +59,7 @@ const RegisterProducts = ({ navigation, route }) => {
 
             if (response.Success) {
                 if (Object.keys(response.Data).length != 0) {
-                    const categorias = response.Data;
-                    setOpcionesCategoria(response.Data);
-                    const categorias_filtradas = categorias.filter(
-                        categoria => !categoria.nombre.includes("Donación")
-                    )
-                    setOpcionesCategoriaDisponibles(categorias_filtradas);
-
+                    setOpcionesCategoriaDisponibles(response.Data);
                 }
             } else {
                 setLoading(false);
@@ -148,25 +140,12 @@ const RegisterProducts = ({ navigation, route }) => {
         });
     };
 
-    const filtrarDestinoCategoria = async (itemValue) => {
-        setProductoDestino(itemValue);
-
-        if (itemValue == "Donación") {
-            const CategoriaDonacion = await opcionesCategoria.find(
-                categoria => categoria.nombre.includes("Donación")
-            )
-            setProductoCategoria(CategoriaDonacion.id);
-        } else {
-            setProductoCategoria(null);
-        }
-    }
-
     const crearProducto = async () => {
         setLoading(true);
 
         if (await Authentication.verificarTokenGuardado()) {
             const usuarioId = await AsyncStorage.getItem('usuarioId');
-            
+
             if (productoNombre && productoPrecio && productoExistencias && productoDestino && productoCategoria && productoEstado && productoImagen) {
                 const data = {
                     "nombre": productoNombre,
@@ -258,7 +237,7 @@ const RegisterProducts = ({ navigation, route }) => {
     return (
         <ScrollView style={styles.ScrollView}>
             <View style={styles.container}>
-            <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
+                <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
                 <Text style={styles.title}>{estaEditando ? "✏️ Editar Producto" : "✏️ Registrar Producto"}</Text>
                 <TextInput style={styles.textInput} placeholder="Nombre" placeholderTextColor={colors.menu_inactive_option} value={productoNombre} onChangeText={setProductoNombre} />
                 <TextInput style={styles.textArea} multiline={true} numberOfLines={6} placeholder="Descripción" placeholderTextColor={colors.menu_inactive_option} value={productoDescripcion} onChangeText={setProductoDescripcion} />
@@ -272,23 +251,19 @@ const RegisterProducts = ({ navigation, route }) => {
                     </View>
                 )}
                 <Text style={styles.firsttextSelect}>Seleccione el destino del producto</Text>
-                <Picker style={styles.picker} selectedValue={productoDestino} dropdownIconColor={colors.primary} onValueChange={(itemValue) => filtrarDestinoCategoria(itemValue)}>
+                <Picker style={styles.picker} selectedValue={productoDestino} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoDestino(itemValue)}>
                     <Picker.Item label="Ninguno" value={null} />
                     <Picker.Item label="Venta" value="Venta" />
                     <Picker.Item label="Intercambio" value="Intercambio" />
                     <Picker.Item label="Subasta" value="Subasta" />
                     <Picker.Item label="Donación" value="Donación" />
                 </Picker>
-                {productoDestino != "Donación" && (
-                    <>
-                        <Text style={styles.textSelect}>Seleccione la categoria del producto</Text><Picker style={styles.picker} selectedValue={productoCategoria} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoCategoria(itemValue)}>
-                            <Picker.Item label="Ninguno" value={null} />
-                            {opcionesCategoriaDisponibles.map((option, index) => (
-                                <Picker.Item key={index} label={option.nombre} value={option.id} />
-                            ))}
-                        </Picker>
-                    </>
-                )}
+                <Text style={styles.textSelect}>Seleccione la categoria del producto</Text><Picker style={styles.picker} selectedValue={productoCategoria} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoCategoria(itemValue)}>
+                    <Picker.Item label="Ninguno" value={null} />
+                    {opcionesCategoriaDisponibles.map((option, index) => (
+                        <Picker.Item key={index} label={option.nombre} value={option.id} />
+                    ))}
+                </Picker>
                 <Text style={styles.textSelect}>Seleccione el estado del producto</Text><Picker style={styles.picker} selectedValue={productoEstado} dropdownIconColor={colors.primary} onValueChange={(itemValue) => setProductoEstado(itemValue)}>
                     <Picker.Item label="Ninguno" value={null} />
                     {opcionesProductoEstado.map((option, index) => (

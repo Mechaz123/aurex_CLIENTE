@@ -1,23 +1,25 @@
-import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
+import Authentication from "../../services/Authentication";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
-import styles from './styles';
-import { Picker } from '@react-native-picker/picker';
-import { useFocusEffect } from '@react-navigation/native';
-import colors from '../../../styles/colors';
-import Spinner from 'react-native-loading-spinner-overlay';
-import Authentication from '../../../services/Authentication';
-import Utils from '../../../services/Utils';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Utils from "../../services/Utils";
 import { AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
-import CustomCardPurchase from '../../../components/CustomCardPurchase/CustomCardPurchase';
+import styles from "./styles";
+import Spinner from "react-native-loading-spinner-overlay";
+import colors from "../../styles/colors";
+import { Picker } from "@react-native-picker/picker";
+import CustomCard from "../../components/CustomCard/CustomCard";
 
-const PurchaseProducts = ({ navigation }) => {
+const Exchange = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [opcionesCategoriasPrincipales, setOpcionesCategoriasPrincipales] = useState([]);
     const [opcionesCategoriasSecundarias, setOpcionesCategoriasSecundarias] = useState([]);
+    const [productos, setProductos] = useState([]);
+    const [requisitosIntercambio, setRequisitosIntercambio] = useState(false);
     const [categoriaPrincipalSeleccionada, setCategoriaPrincipalSeleccionada] = useState(null);
     const [categoriaSecundariaSeleccionada, setCategoriaSecundariaSeleccionada] = useState(null);
     const [categoriasSecundariasFiltradas, setCategoriasSecundariasFiltradas] = useState([]);
-    const [productos, setProductos] = useState([]);
     const [productosFiltrados, setProductosFiltrados] = useState([]);
 
     useFocusEffect(
@@ -25,18 +27,20 @@ const PurchaseProducts = ({ navigation }) => {
             cargarCategoriasPrincipalesOpciones();
             cargarCategoriasSecundariasOpciones();
             cargarProductos();
+            verificarRequisitosIntercambio();
             return (() => {
                 setLoading(false);
                 setOpcionesCategoriasPrincipales([]);
                 setOpcionesCategoriasSecundarias([]);
+                setProductos([]);
+                setRequisitosIntercambio(false);
                 setCategoriaPrincipalSeleccionada(null);
                 setCategoriaSecundariaSeleccionada(null);
                 setCategoriasSecundariasFiltradas([]);
-                setProductos([]);
                 setProductosFiltrados([]);
             });
         }, [])
-    );
+    )
 
     const cargarCategoriasPrincipalesOpciones = async () => {
         setLoading(true);
@@ -76,14 +80,36 @@ const PurchaseProducts = ({ navigation }) => {
 
     const cargarProductos = async () => {
         if (await Authentication.verificarTokenGuardado()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `producto/venta`);
+            const usuarioId = await AsyncStorage.getItem('usuarioId');
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `producto/intercambio/${usuarioId}`);
 
             if (response.Success) {
                 setProductos(response.Data);
-                setLoading(false);
             } else {
                 setLoading(false);
                 Alert.alert("ERROR ❌", "No se pudo cargar los productos.");
+            }
+        } else {
+            setLoading(false);
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Login");
+        }
+    }
+
+    const verificarRequisitosIntercambio = async () => {
+        if (await Authentication.verificarTokenGuardado()) {
+            const usuarioId = await AsyncStorage.getItem('usuarioId');
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `intercambio/verificar_requisitos/${usuarioId}`);
+
+            if (response.Success) {
+                setRequisitosIntercambio(response.Data);
+                setLoading(false);
+                if (!response.Data) {
+                    Alert.alert("ADVERTENCIA ⚠️", "Actualmente usted no tiene productos para intercambiar.");
+                }
+            } else {
+                setLoading(false);
+                Alert.alert("ERROR ❌", "No se pudo verificar los requisitos para realizar intercambios.");
             }
         } else {
             setLoading(false);
@@ -139,27 +165,28 @@ const PurchaseProducts = ({ navigation }) => {
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
         }
-
     }
 
     const detallesProducto = async (idProducto) => {
         const ID = idProducto;
-        navigation.navigate("DetailsProductPurchase", { ID });
+        navigation.navigate("DetailsProductExchange", { ID });
     }
 
     return (
         <View style={styles.container}>
             <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
-            <Text style={styles.title}>🛍️ Comprar</Text>
-            <View style={styles.selectContainer}>
-                <Text style={styles.textSelectContainer}>Seleccione la categoría principal</Text>
-                <Picker style={styles.picker} selectedValue={categoriaPrincipalSeleccionada} dropdownIconColor={colors.primary} onValueChange={(itemValue) => filtrarCategoriasSecundariasOpciones(itemValue)}>
-                    <Picker.Item label="Ninguno" value={null} />
-                    {opcionesCategoriasPrincipales.map((option, index) => (
-                        <Picker.Item key={index} label={option.nombre} value={option.id} />
-                    ))}
-                </Picker>
-            </View>
+            <Text style={styles.title}>🤝 Intercambiar</Text>
+            {requisitosIntercambio && (
+                <View style={styles.selectContainer}>
+                    <Text style={styles.textSelectContainer}>Seleccione la categoría principal</Text>
+                    <Picker style={styles.picker} selectedValue={categoriaPrincipalSeleccionada} dropdownIconColor={colors.primary} onValueChange={(itemValue) => filtrarCategoriasSecundariasOpciones(itemValue)}>
+                        <Picker.Item label="Ninguno" value={null} />
+                        {opcionesCategoriasPrincipales.map((option, index) => (
+                            <Picker.Item key={index} label={option.nombre} value={option.id} />
+                        ))}
+                    </Picker>
+                </View>
+            )}
             {categoriaPrincipalSeleccionada && (
                 <View style={styles.selectContainer}>
                     <Text style={styles.textSelectContainer}>Seleccione la categoría secundaria</Text>
@@ -173,11 +200,11 @@ const PurchaseProducts = ({ navigation }) => {
             )}
             {categoriaSecundariaSeleccionada && (
                 <View style={styles.container}>
-                    <Text style={styles.text_products}>Seleccione el producto que desea comprar.</Text>
+                    <Text style={styles.text_products}>Seleccione el producto que desea intercambiar.</Text>
                     <FlatList data={productosFiltrados} keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
                             <TouchableOpacity onPress={() => detallesProducto(item.id)}>
-                                <CustomCardPurchase title={item.nombre} description={item.descripcion} image={item.imagen_url} price={item.precio} />
+                                <CustomCard title={item.nombre} description={item.descripcion} image={item.imagen_url} state={item.estado_producto.nombre} price={item.precio} stock={item.existencias} />
                             </TouchableOpacity>
                         )}
                     />
@@ -187,4 +214,4 @@ const PurchaseProducts = ({ navigation }) => {
     );
 }
 
-export default PurchaseProducts;
+export default Exchange;

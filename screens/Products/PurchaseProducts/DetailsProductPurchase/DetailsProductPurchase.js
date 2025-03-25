@@ -10,7 +10,7 @@ import styles from "./styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../../../../components/CustomButton/CustomButton";
 
-const DetailsProduct = ({ navigation, route }) => {
+const DetailsProductPurchase = ({ navigation, route }) => {
     let { ID } = route.params ?? {};
     const [loading, setLoading] = useState(false);
     const [producto, setProducto] = useState(null);
@@ -153,4 +153,4 @@ const DetailsProduct = ({ navigation, route }) => {
     )
 }
 
-export default DetailsProduct;
+export default DetailsProductPurchase;

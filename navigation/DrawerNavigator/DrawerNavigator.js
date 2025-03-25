@@ -21,6 +21,8 @@ import DonationProducts from "../../screens/Products/DonationProducts/DonationPr
 import UserManagement from "../../screens/User/UserManagement/UserManagement";
 import Order from "../../screens/Order/Order";
 import PurchaseHistory from "../../screens/PurchaseHistory/PurchaseHistory";
+import { Alert } from "react-native";
+import Exchange from "../../screens/Exchange/Exchange";
 
 const Drawer = createDrawerNavigator();
 
@@ -29,13 +31,21 @@ const DrawerNavigator = () => {
 
     useEffect(() => {
         getMenuOpciones();
+        return(() => {
+            setOpciones([]);
+        })
     }, []);
 
     const getMenuOpciones = async () => {
+        
         if (await Authentication.verificarTokenGuardado()) {
             const ID = await AsyncStorage.getItem('usuarioId');
             const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_MID_URL, `usuario/${ID}/menu_opciones`);
-            setOpciones(response.Data);
+            if (response.Success) {
+                setOpciones(response.Data);
+            } else {
+                Alert.alert("ERROR ❌", "Ocurrió un error al intentar consultar las opciones del menú, por favor ingrese de uno a la aplicación.");   
+            }
         } else {
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
             navigation.replace("Login");
@@ -54,6 +64,9 @@ const DrawerNavigator = () => {
             {opciones.includes("Purchase") && (
                 <Drawer.Screen name="Purchase" component={PurchaseProducts} options={screenOptions.Purchase} />
             )}
+            {opciones.includes("PurchaseHistory") && (
+                <Drawer.Screen name="PurchaseHistory" component={PurchaseHistory} options={screenOptions.PurchaseHistory} />
+            )}
             {opciones.includes("Sell") && (
                 <Drawer.Screen name="Sell" component={SellProducts} options={screenOptions.Sell} />
             )}
@@ -65,6 +78,15 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("DonationProducts") && (
                 <Drawer.Screen name="DonationProducts" component={DonationProducts} options={screenOptions.DonationProducts} />
+            )}
+            {opciones.includes("RegisterProducts") && (
+                <Drawer.Screen name="RegisterProducts" component={RegisterProducts} options={screenOptions.RegisterProducts} />
+            )}
+            {opciones.includes("Order") && (
+                <Drawer.Screen name="Order" component={Order} options={screenOptions.Order} />
+            )}
+            {opciones.includes("Exchange") && (
+                <Drawer.Screen name="Exchange" component={Exchange} options={screenOptions.Exchange} />
             )}
             {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
@@ -81,20 +103,11 @@ const DrawerNavigator = () => {
             {opciones.includes("RolePermission") && (
                 <Drawer.Screen name="RolePermission" component={RolePermission} options={screenOptions.RolePermission} />
             )}
-            {opciones.includes("RegisterProducts") && (
-                <Drawer.Screen name="RegisterProducts" component={RegisterProducts} options={screenOptions.RegisterProducts} />
-            )}
             {opciones.includes("RegisterUsers") && (
                 <Drawer.Screen name="RegisterUsers" component={RegisterUser} options={screenOptions.RegisterUser} />
             )}
             {opciones.includes("UserManagement") && (
                 <Drawer.Screen name="UserManagement" component={UserManagement} options={screenOptions.UserManagement} />
-            )}
-            {opciones.includes("Order") && (
-                <Drawer.Screen name="Order" component={Order} options={screenOptions.Order} />
-            )}
-            {opciones.includes("PurchaseHistory") && (
-                <Drawer.Screen name="PurchaseHistory" component={PurchaseHistory} options={screenOptions.PurchaseHistory} />
             )}
             <Drawer.Screen name="Logout" component={() => null} options={screenOptions.Logout} listeners={({ navigation }) => ({
                 focus: () => Salir(navigation),

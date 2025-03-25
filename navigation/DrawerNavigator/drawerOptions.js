@@ -83,6 +83,10 @@ export const screenOptions = {
         title: "AUREX",
         drawerLabel: "📦 Historial de compras"
     },
+    Exchange: {
+        title: "AUREX",
+        drawerLabel: "🤝 Intercambiar"
+    },
     Logout: {
         drawerLabel: "🚪 Salir",
     },

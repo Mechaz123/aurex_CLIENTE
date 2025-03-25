@@ -37,10 +37,13 @@ export const screenOptions = {
     DepositMoney: {
         title: "AUREX"
     },
-    DetailsProduct: {
+    DetailsProductPurchase: {
         title: "AUREX"
     },
     VerifyPurchase: {
         headerShown: false,
+    },
+    DetailsProductExchange: {
+        title: "AUREX"
     }
 };
