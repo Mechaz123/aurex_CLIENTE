@@ -45,5 +45,14 @@ export const screenOptions = {
     },
     DetailsProductExchange: {
         title: "AUREX"
+    },
+    SelectProductOffer: {
+        title: "AUREX"
+    },
+    DetailsProductOffer: {
+        title: "AUREX"
+    },
+    VerifyExchange: {
+        headerShown: false,
     }
 };

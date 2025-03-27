@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import styles from "./styles";
 import Spinner from "react-native-loading-spinner-overlay";
 import colors from "../../../styles/colors";
 import CustomCardDetailProduct from "../../../components/CustomCardDetailProduct/CustomCardDetailProduct";
-import styles from "./styles";
 import CustomButton from "../../../components/CustomButton/CustomButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const DetailsProductExchange = ({ navigation, route }) => {
-    let { ID } = route.params ?? {};
+const DetailsProductOffer = ({ navigation, route }) => {
+    let data = route.params ?? {};
     const [loading, setLoading] = useState(false);
     const [producto, setProducto] = useState(null);
     const [cantidadProducto, setCantidadProducto] = useState(1);
@@ -19,19 +20,16 @@ const DetailsProductExchange = ({ navigation, route }) => {
     useEffect(() => {
         cargarProducto();
         return (() => {
-            ID = undefined;
+            data = undefined;
             setLoading(false);
-            setProducto(null);
-            setCantidadProducto(1);
-            setExistenciasDisponibles(false);
         });
     }, [route.params])
 
     const cargarProducto = async () => {
         setLoading(true);
 
-        if (await Authentication.verificarTokenGuardado()) {
-            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `producto/${ID}`);
+        if (Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendGetRequest(AUREX_CLIENTE_AUREX_CRUD_URL, `producto/${data.producto_ofrecido.id}`);
 
             if (response.Success) {
                 setProducto(response.Data);
@@ -63,28 +61,25 @@ const DetailsProductExchange = ({ navigation, route }) => {
     const verificarExistenciasProducto = (cantidad) => {
         if (cantidad > producto.existencias) {
             setExistenciasDisponibles(false);
-            Alert.alert("ERROR ❌", "Señor usuario actualmente no contamos con la cantidad de productos que requiere.")
+            Alert.alert("ERROR ❌", "Señor usuario actualmente no cuenta con la cantidad de productos que ha seleccionado.")
         } else {
             setExistenciasDisponibles(true);
         }
     }
 
-    const confirmarProductoSolicitante = async () => {
+    const confirmarIntercambio = async () => {
         if (await Authentication.verificarTokenGuardado()) {
             if (existenciasDisponibles) {
-                const data = {
-                    usuario_solicitante: {
-                        id: producto.propietario.id
+                const usuarioId = await AsyncStorage.getItem('usuarioId');
+                const updatedData = { ...data, 
+                    usuario_ofertante:{
+                        id: Number(usuarioId)
                     },
-                    producto_solicitante:{
-                        id: producto.id
-                    },
-                    cantidad_solicitada: cantidadProducto
-                }
-
-                navigation.navigate("SelectProductOffer", data);
+                    cantidad_ofrecida: cantidadProducto
+                };
+                navigation.navigate("VerifyExchange", updatedData);
             } else {
-                Alert.alert("ERROR ❌", "Señor usuario actualmente no contamos con la cantidad de productos que requiere, por favor seleccione una cantidad menor.");
+                Alert.alert("ERROR ❌", "Señor usuario actualmente no cuenta con la cantidad de productos que desea, por favor seleccione una cantidad menor.");
             }
         } else {
             Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
@@ -94,7 +89,7 @@ const DetailsProductExchange = ({ navigation, route }) => {
 
     return (
         <ScrollView style={styles.scollView}>
-            <View style={styles.container}>
+            <View style={styles.container} >
                 <Spinner visible={loading} textContent={"Cargando..."} textStyle={{ color: colors.white }} overlayColor="rgba(0,0,0,0.5)" />
                 <Text style={styles.title}>🤝 Detalles del producto</Text>
                 {producto && (
@@ -117,10 +112,10 @@ const DetailsProductExchange = ({ navigation, route }) => {
                         <Text style={styles.quantity_button_text}>+</Text>
                     </TouchableOpacity>
                 </View>
-                <CustomButton title={"Confirmar producto solicitante"} onPress={() => confirmarProductoSolicitante()} />
+                <CustomButton title={"Confirmar producto ofertante"} onPress={() => confirmarIntercambio()} />
             </View>
         </ScrollView>
     )
 }
 
-export default DetailsProductExchange;
+export default DetailsProductOffer;

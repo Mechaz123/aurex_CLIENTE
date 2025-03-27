@@ -12,6 +12,9 @@ import DepositMoney from "../../screens/DepositMoney/DepositMoney";
 import VerifyPurchase from "../../screens/Products/PurchaseProducts/VerifyPurchase/VerifyPurchase";
 import DetailsProductPurchase from "../../screens/Products/PurchaseProducts/DetailsProductPurchase/DetailsProductPurchase";
 import DetailsProductExchange from "../../screens/Exchange/DetailsProductExchange/DetailsProductExchange";
+import SelectProductOffer from "../../screens/Exchange/SelectProductOffer/SelectProductOffer";
+import DetailsProductOffer from "../../screens/Exchange/DetailsProductOffer/DetailsProductOffer";
+import VerifyExchange from "../../screens/Exchange/VerifyExchange/VerifyExchange";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +32,9 @@ const StackNavigator = () => {
             <Stack.Screen name="DetailsProductPurchase" component={DetailsProductPurchase} options={screenOptions.DetailsProductPurchase} />
             <Stack.Screen name="VerifyPurchase" component={VerifyPurchase} options={screenOptions.VerifyPurchase} />
             <Stack.Screen name="DetailsProductExchange" component={DetailsProductExchange} options={screenOptions.DetailsProductExchange} />
+            <Stack.Screen name="SelectProductOffer" component={SelectProductOffer} options={screenOptions.SelectProductOffer} />
+            <Stack.Screen name="DetailsProductOffer" component={DetailsProductOffer} options={screenOptions.DetailsProductOffer} />
+            <Stack.Screen name="VerifyExchange" component={VerifyExchange} options={screenOptions.VerifyExchange} />
         </Stack.Navigator>
     );
 }

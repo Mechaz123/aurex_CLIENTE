@@ -87,6 +87,10 @@ export const screenOptions = {
         title: "AUREX",
         drawerLabel: "🤝 Intercambiar"
     },
+    ExchangeHistory: {
+        title: "AUREX",
+        drawerLabel: "📋 Historial de intercambio"
+    },
     Logout: {
         drawerLabel: "🚪 Salir",
     },

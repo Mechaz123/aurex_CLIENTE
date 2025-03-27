@@ -23,6 +23,7 @@ import Order from "../../screens/Order/Order";
 import PurchaseHistory from "../../screens/PurchaseHistory/PurchaseHistory";
 import { Alert } from "react-native";
 import Exchange from "../../screens/Exchange/Exchange";
+import ExchangeHistory from "../../screens/ExchangeHistory/ExchangeHistory";
 
 const Drawer = createDrawerNavigator();
 
@@ -87,6 +88,9 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("Exchange") && (
                 <Drawer.Screen name="Exchange" component={Exchange} options={screenOptions.Exchange} />
+            )}
+            {opciones.includes("ExchangeHistory") && (
+                <Drawer.Screen name="ExchangeHistory" component={ExchangeHistory} options={screenOptions.ExchangeHistory} />
             )}
             {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
