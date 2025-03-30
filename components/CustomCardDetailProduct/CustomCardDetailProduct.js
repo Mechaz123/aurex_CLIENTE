@@ -25,7 +25,7 @@ const CustomCardDetailProduct = ({ image, name, description, state, price, owner
         if (owner.imagen_url == null) {
             return DefaultImageUser;
         } else {
-            return { uri: `data:image/png;base64,${user.imagen_url}` };
+            return { uri: `data:image/png;base64,${owner.imagen_url}` };
         }
     }
 
