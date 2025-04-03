@@ -15,6 +15,7 @@ import DetailsProductExchange from "../../screens/Exchange/DetailsProductExchang
 import SelectProductOffer from "../../screens/Exchange/SelectProductOffer/SelectProductOffer";
 import DetailsProductOffer from "../../screens/Exchange/DetailsProductOffer/DetailsProductOffer";
 import VerifyExchange from "../../screens/Exchange/VerifyExchange/VerifyExchange";
+import VerifyAuction from "../../screens/Auction/VerifyAuction/VerifyAuction";
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,7 @@ const StackNavigator = () => {
             <Stack.Screen name="SelectProductOffer" component={SelectProductOffer} options={screenOptions.SelectProductOffer} />
             <Stack.Screen name="DetailsProductOffer" component={DetailsProductOffer} options={screenOptions.DetailsProductOffer} />
             <Stack.Screen name="VerifyExchange" component={VerifyExchange} options={screenOptions.VerifyExchange} />
+            <Stack.Screen name="VerifyAuction" component={VerifyAuction} options={screenOptions.VerifyAuction} />
         </Stack.Navigator>
     );
 }

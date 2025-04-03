@@ -24,6 +24,7 @@ import PurchaseHistory from "../../screens/PurchaseHistory/PurchaseHistory";
 import { Alert } from "react-native";
 import Exchange from "../../screens/Exchange/Exchange";
 import ExchangeHistory from "../../screens/ExchangeHistory/ExchangeHistory";
+import RegisterAuction from "../../screens/Auction/RegisterAuction/RegisterAuction";
 
 const Drawer = createDrawerNavigator();
 
@@ -91,6 +92,9 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("ExchangeHistory") && (
                 <Drawer.Screen name="ExchangeHistory" component={ExchangeHistory} options={screenOptions.ExchangeHistory} />
+            )}
+            {opciones.includes("RegisterAuction") && (
+                <Drawer.Screen name="RegisterAuction" component={RegisterAuction} options={screenOptions.RegisterAuction} />
             )}
             {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />

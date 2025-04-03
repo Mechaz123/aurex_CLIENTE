@@ -91,6 +91,10 @@ export const screenOptions = {
         title: "AUREX",
         drawerLabel: "📋 Historial de intercambio"
     },
+    RegisterAuction: {
+        title: "AUREX",
+        drawerLabel: "🎟️ Registrar subasta"
+    },
     Logout: {
         drawerLabel: "🚪 Salir",
     },

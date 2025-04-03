@@ -54,5 +54,8 @@ export const screenOptions = {
     },
     VerifyExchange: {
         headerShown: false,
+    },
+    VerifyAuction: {
+        headerShown: false,
     }
 };
