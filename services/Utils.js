@@ -25,7 +25,7 @@ class Utils {
         const token = await AsyncStorage.getItem('autenticacionToken');
 
         try {
-            const response = await axios.get(url, {headers:{Authorization: `Bearer ${token}`}});
+            const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
             return response.data;
         } catch (error) {
             const data = { Data: [], Message: 'No se pudo enviar la petición.', Status: 500, Success: false }
@@ -74,7 +74,7 @@ class Utils {
         const token = await AsyncStorage.getItem('autenticacionToken');
 
         try {
-            const response = await axios.delete(url,{headers:{Authorization: `Bearer ${token}`}});
+            const response = await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
             return response.data;
         } catch (error) {
             const data = { Data: [], Message: 'No se pudo enviar la petición.', Status: 500, Success: false }

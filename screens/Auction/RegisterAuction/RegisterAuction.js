@@ -79,12 +79,6 @@ const RegisterAuction = ({ navigation }) => {
         }
     }
 
-    const ajustarFechaColombia = (fecha) => {
-        const nuevaFecha = new Date(fecha);
-        nuevaFecha.setHours(nuevaFecha.getHours() - nuevaFecha.getTimezoneOffset() / 60 - 5);
-        return nuevaFecha.toISOString().slice(0, 19).replace("T", " ");
-    };
-
     const crearSubasta = async () => {
         if (subastaPrecioInicial && subastaFechaInicio && subastaFechaFin && subastaProductoSeleccionado) {
             if (subastaProductoSeleccionado.estado_producto.nombre != "Inactivo") {
@@ -96,8 +90,8 @@ const RegisterAuction = ({ navigation }) => {
                             },
                             precio_inicial: subastaPrecioInicial,
                             precio_actual: subastaPrecioInicial,
-                            fecha_inicio: ajustarFechaColombia(subastaFechaInicio),
-                            fecha_fin: ajustarFechaColombia(subastaFechaFin),
+                            fecha_inicio: subastaFechaInicio,
+                            fecha_fin: subastaFechaFin,
                             estado_subasta: {
                                 id: subastaEstadoSubasta 
                             }

@@ -57,5 +57,11 @@ export const screenOptions = {
     },
     VerifyAuction: {
         headerShown: false,
+    },
+    Bid: {
+        title: "AUREX"
+    },
+    VerifyBid: {
+        headerShown: false,
     }
 };
