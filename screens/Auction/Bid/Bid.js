@@ -76,7 +76,7 @@ const Bid = ({ navigation, route }) => {
                             id: subastaId
                         },
                         usuario: {
-                            id: idUsuario
+                            id: Number(idUsuario)
                         },
                         monto: Number(montoPuja)
                     }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useNFCScanner from "../../../hooks/useNFCScanner";
 import Authentication from "../../../services/Authentication";
 import Utils from "../../../services/Utils";
-import { AUREX_CLIENTE_AUREX_CRUD_URL } from 'react-native-dotenv';
+import { AUREX_CLIENTE_AUREX_CRUD_URL, AUREX_CLIENTE_AUREX_MID_URL } from 'react-native-dotenv';
 import { Alert, Text, View } from "react-native";
 import colors from "../../../styles/colors";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -61,7 +61,25 @@ const VerifyBid = ({ navigation, route }) => {
     }
 
     const crearPuja = async () => {
-        
+        setLoading(true);
+
+        if (await Authentication.verificarTokenGuardado()) {
+            const response = await Utils.sendPostRequest(AUREX_CLIENTE_AUREX_MID_URL, `subasta/registrar_puja`, data);
+
+            if (response.Success) {
+                setLoading(false);
+                Alert.alert("EXITO ✅", "La puja fue registrada, recuerde revisar constantemente la subasta.");
+                navigation.replace("Menu");
+            } else {
+                setLoading(false);
+                Alert.alert("ERROR ❌", "No se pudo realizar el registro de la puja.");
+                navigation.replace("Menu"); 
+            }
+        } else {
+            setLoading(false);
+            Alert.alert("ERROR ❌", "Su sesión ha caducado, por favor ingrese de nuevo a la aplicación.");
+            navigation.replace("Menu");
+        }
     }
 
     return (

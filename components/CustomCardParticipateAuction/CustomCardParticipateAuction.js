@@ -11,7 +11,7 @@ const CustomCardParticipateAuction = ({ subasta, puja }) => {
     const CurrentWinner = () => {
         if (Object.keys(subasta.pujas).length != 0) {
             const puja = subasta.pujas.find(puja => puja.activo);
-            return (puja.usuario.nombre + puja.usuario.apellido);
+            return (puja.usuario.nombre + " " + puja.usuario.apellido);
         } else {
             return "Ninguno";
         }
