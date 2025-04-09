@@ -26,6 +26,7 @@ import Exchange from "../../screens/Exchange/Exchange";
 import ExchangeHistory from "../../screens/ExchangeHistory/ExchangeHistory";
 import RegisterAuction from "../../screens/Auction/RegisterAuction/RegisterAuction";
 import ParticipateAuction from "../../screens/Auction/ParticipateAuction/ParticipateAuction";
+import ViewAuctions from "../../screens/Auction/ViewAuctions/ViewAuctions";
 
 const Drawer = createDrawerNavigator();
 
@@ -99,6 +100,9 @@ const DrawerNavigator = () => {
             )}
             {opciones.includes("RegisterAuction") && (
                 <Drawer.Screen name="RegisterAuction" component={RegisterAuction} options={screenOptions.RegisterAuction} />
+            )}
+            {opciones.includes("ViewAuctions") && (
+                <Drawer.Screen name="ViewAuctions" component={ViewAuctions} options={screenOptions.ViewAuctions} />
             )}
             {opciones.includes("RegisterCategory") && (
                 <Drawer.Screen name="RegisterCategory" component={RegisterCategory} options={screenOptions.RegisterCategory} />
